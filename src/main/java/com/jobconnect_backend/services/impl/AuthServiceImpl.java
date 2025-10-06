@@ -172,11 +172,82 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public void verifyOtp(VerifyOtpRequest request) {
-        
+        if (!pendingRegistrations.containsKey(request.getEmail())) {
+            throw new BadRequestException("No registration found for this email");
+        }
+
+        String storedOtp = pendingOtps.get(request.getEmail());
+        LocalDateTime otpExpiry = pendingOtpExpiries.get(request.getEmail());
+
+        if (storedOtp == null || otpExpiry == null) {
+            throw new BadRequestException("No OTP found for this email");
+        }
+
+        if (LocalDateTime.now().isAfter(otpExpiry)) {
+            pendingRegistrations.remove(request.getEmail());
+            pendingLogoPaths.remove(request.getEmail());
+            pendingOtps.remove(request.getEmail());
+            pendingOtpExpiries.remove(request.getEmail());
+            throw new BadRequestException("OTP has expired");
+        }
+
+        if (!storedOtp.equals(request.getOtp())) {
+            throw new BadRequestException("Invalid OTP");
+        }
+
+        RegistrationRequest registrationRequest = pendingRegistrations.get(request.getEmail());
+        String logoPath = pendingLogoPaths.getOrDefault(request.getEmail(), DefaultValue.AVATAR_URL_DEFAULT);
+
+        User user = User.builder()
+                .email(registrationRequest.getEmail())
+                .passwordHash(passwordEncoder.encode(registrationRequest.getPassword()))
+                .phone(registrationRequest.getPhone())
+                .role(registrationRequest.getRole())
+                .createdAt(LocalDateTime.now())
+                .isVerified(true)
+                .isVip(false)
+                .vipExpiryDate(null)
+                .vipLevel(null)
+                .build();
+
+        userRepository.save(user);
+
+        companyRepository.save(Company.builder()
+                .companyName(registrationRequest.getCompanyName())
+                .industry(registrationRequest.getIndustryIds()
+                        .stream()
+                        .map(industryId -> Industry.builder().industryId(industryId).build())
+                        .collect(Collectors.toList()))
+                .logoPath(logoPath)
+                .website(registrationRequest.getWebsite())
+                .description(registrationRequest.getDescription())
+                .isVerified(true)
+                .user(user)
+                .createJobCount(5)
+                .build());
+
+        pendingRegistrations.remove(request.getEmail());
+        pendingLogoPaths.remove(request.getEmail());
+        pendingOtps.remove(request.getEmail());
+        pendingOtpExpiries.remove(request.getEmail());
     }
 
     @Override
     public void resendOtp(String email) {
+        if (!pendingRegistrations.containsKey(email)) {
+            throw new BadRequestException("No registration found for this email");
+        }
 
+        String otp = String.format("%06d", new Random().nextInt(999999));
+        LocalDateTime otpExpiry = LocalDateTime.now().plusMinutes(10);
+
+        pendingOtps.put(email, otp);
+        pendingOtpExpiries.put(email, otpExpiry);
+
+        try {
+            emailConfig.sendOtpEmail(email, otp);
+        } catch (Exception e) {
+            throw new BadRequestException("Failed to send OTP email: " + e.getMessage());
+        }
     }
 }

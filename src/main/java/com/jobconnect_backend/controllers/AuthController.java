@@ -34,5 +34,21 @@ public class AuthController {
         return ResponseEntity.ok(authResponse);
     }
 
+    @PostMapping("/verify-otp")
+    public ResponseEntity<SuccessResponse> verifyOtp(
+            @Valid @RequestBody VerifyOtpRequest request) {
+        authServiceImpl.verifyOtp(request);
+        return ResponseEntity.ok(new SuccessResponse("OTP verified successfully"));
+    }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<SuccessResponse> resendOtp(
+            @RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            throw new BadRequestException("Email is required");
+        }
+        authServiceImpl.resendOtp(email);
+        return ResponseEntity.ok(new SuccessResponse("OTP resent successfully"));
+    }
 }
