@@ -23,5 +23,5 @@ public class Attachment {
     private String fileName;
     private String fileType;
     private String filePath;
-    private LocalDateTime date;
+    private LocalDateTime uploadTime;
 }

@@ -1,6 +1,6 @@
 package com.jobconnect_backend.entities;
 
-import com.jobconnect_backend.entities.enums.Role;
+import com.jobfind.models.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Review {
+public class CompanyReview {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reviewId;
 
     private Integer rating;
 
-    private String content;
+    private String reviewText;
 
     private LocalDateTime reviewDate;
 
