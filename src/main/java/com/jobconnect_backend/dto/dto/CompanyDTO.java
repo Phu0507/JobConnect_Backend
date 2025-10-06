@@ -1,6 +1,6 @@
 package com.jobconnect_backend.dto.dto;
 
-import com.jobfind.dto.response.IndustryReponse;
+import com.jobconnect_backend.dto.response.IndustryReponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

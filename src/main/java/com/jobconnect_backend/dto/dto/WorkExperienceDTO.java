@@ -1,7 +1,7 @@
 package com.jobconnect_backend.dto.dto;
 
 import com.jobconnect_backend.entities.JobCategory;
-import com.jobfind.models.enums.JobType;
+import com.jobconnect_backend.entities.enums.JobType;
 import lombok.*;
 
 import java.util.List;

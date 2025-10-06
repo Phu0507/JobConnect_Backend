@@ -1,6 +1,7 @@
 package com.jobconnect_backend.dto.dto;
 
-import com.jobfind.models.enums.ApplicationStatus;
+
+import com.jobconnect_backend.entities.enums.ApplicationStatus;
 import lombok.Builder;
 import lombok.Data;
 
