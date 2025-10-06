@@ -20,6 +20,7 @@ public class Industry {
     private Integer industryId;
 
     private String name;
+    private String description;
 
     @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<JobCategory> jobCategories = new ArrayList<>();

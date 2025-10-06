@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CompanyReview {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reviewId;
 
     private Integer rating;
 
-    private String reviewText;
+    private String content;
 
     private LocalDateTime reviewDate;
 
@@ -30,6 +30,9 @@ public class CompanyReview {
     @ManyToOne
     @JoinColumn(name = "job_seeker_profile_id")
     private JobSeekerProfile jobSeekerProfile;
+
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isAnonymous;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean isApproved;

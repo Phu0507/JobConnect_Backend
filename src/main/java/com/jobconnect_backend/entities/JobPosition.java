@@ -14,6 +14,5 @@ public class JobPosition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer jobPositionId;
-
     private String name;
 }
