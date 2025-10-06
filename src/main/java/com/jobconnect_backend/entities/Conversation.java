@@ -26,6 +26,5 @@ public class Conversation {
     private Integer unreadCountJobSeeker = 0;
     private Integer unreadCountCompany = 0;
     private LocalDateTime createAt;
-    private String lastMessageContent;
     private LocalDateTime lastMessageAt;
 }
