@@ -25,11 +25,61 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtFilter;
+    private final UserDetailsService userDetailsService;
+    private final CorsConfigurationSource corsConfigurationSource;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/job/getJobById/**").permitAll()
+                        .requestMatchers("/job/searchJobs").permitAll()
+                        .requestMatchers("/job/priority").permitAll()
+                        .requestMatchers("/job/{companyId}/jobs").permitAll()
+                        .requestMatchers("/job/company/**").permitAll()
+                        .requestMatchers("/jobCategory/all").permitAll()
+                        .requestMatchers("/job/category/**").permitAll()
+                        .requestMatchers("/companyIndustry/all").permitAll()
+                        .requestMatchers("company/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\n\t\"message\" : \"" + "Unauthorized" + "\"\n}");
+                        })
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+}

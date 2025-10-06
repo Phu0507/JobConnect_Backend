@@ -10,6 +10,7 @@ import com.jobconnect_backend.dto.response.AuthResponse;
 import com.jobconnect_backend.entities.JobSeekerProfile;
 import com.jobconnect_backend.entities.User;
 import com.jobconnect_backend.entities.enums.Role;
+import com.jobconnect_backend.exception.BadRequestException;
 import com.jobconnect_backend.repositories.JobSeekerProfileRepository;
 import com.jobconnect_backend.repositories.UserRepository;
 import com.jobconnect_backend.services.IAuthService;
@@ -21,6 +22,7 @@ import org.springframework.validation.BindingResult;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -33,6 +35,11 @@ public class AuthServiceImpl implements IAuthService {
     private final ValidateField validateField;
     private final AwsS3Service awsS3Service;
     private final EmailConfig emailConfig;
+
+    private final Map<String, RegistrationRequest> pendingRegistrations = new HashMap<>();
+    private final Map<String, String> pendingLogoPaths = new HashMap<>();
+    private final Map<String, String> pendingOtps = new HashMap<>();
+    private final Map<String, LocalDateTime> pendingOtpExpiries = new HashMap<>();
     @Override
     public void register(RegistrationRequest registrationRequest, BindingResult result) throws IOException {
         Map<String, String> errors = validateField.getErrors(result);
@@ -97,7 +104,7 @@ public class AuthServiceImpl implements IAuthService {
             pendingOtpExpiries.put(registrationRequest.getEmail(), otpExpiry);
 
             try {
-                emailService.sendOtpEmail(registrationRequest.getEmail(), otp);
+                emailConfig.sendOtpEmail(registrationRequest.getEmail(), otp);
             } catch (Exception e) {
                 pendingRegistrations.remove(registrationRequest.getEmail());
                 pendingOtps.remove(registrationRequest.getEmail());

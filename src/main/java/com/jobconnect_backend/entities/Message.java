@@ -1,6 +1,6 @@
 package com.jobconnect_backend.entities;
 
-import com.jobfind.models.enums.MessageType;
+import com.jobconnect_backend.entities.enums.MessageType;
 import jakarta.persistence.*;
 import lombok.*;
 
