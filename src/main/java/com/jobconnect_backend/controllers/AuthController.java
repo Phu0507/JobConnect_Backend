@@ -1,18 +1,20 @@
 package com.jobconnect_backend.controllers;
 
+import com.jobconnect_backend.dto.request.AuthRequest;
 import com.jobconnect_backend.dto.request.RegistrationRequest;
+import com.jobconnect_backend.dto.request.VerifyOtpRequest;
+import com.jobconnect_backend.dto.response.AuthResponse;
 import com.jobconnect_backend.dto.response.SuccessResponse;
+import com.jobconnect_backend.exception.BadRequestException;
 import com.jobconnect_backend.services.IAuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,4 +27,12 @@ public class AuthController {
         authServiceImpl.register(registrationRequest, result);
         return ResponseEntity.ok(new SuccessResponse("User registered successfully"));
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest, BindingResult result) {
+        AuthResponse authResponse = authServiceImpl.login(authRequest, result);
+        return ResponseEntity.ok(authResponse);
+    }
+
+
 }
