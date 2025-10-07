@@ -65,25 +65,7 @@ public class AuthServiceImpl implements IAuthService {
             throw new BadRequestException("Email already in use");
         }
 
-        if (registrationRequest.getRole() == Role.JOBSEEKER) {
-            User user = User.builder()
-                    .email(registrationRequest.getEmail())
-                    .passwordHash(passwordEncoder.encode(registrationRequest.getPassword()))
-                    .phone(registrationRequest.getPhone())
-                    .role(registrationRequest.getRole())
-                    .createdAt(LocalDateTime.now())
-                    .isVerified(true)
-                    .build();
-
-            userRepository.save(user);
-
-            jobSeekerProfileRepository.save(JobSeekerProfile.builder()
-                    .firstName(registrationRequest.getFirstName())
-                    .lastName(registrationRequest.getLastName())
-                    .avatar(DefaultValue.AVATAR_URL_DEFAULT)
-                    .user(user)
-                    .build());
-        } else if (registrationRequest.getRole() == Role.COMPANY) {
+        if (registrationRequest.getRole() == Role.COMPANY) {
             String otp = String.format("%06d", new Random().nextInt(999999));
             LocalDateTime otpExpiry = LocalDateTime.now().plusMinutes(10);
             String logoPath = DefaultValue.AVATAR_URL_DEFAULT;
