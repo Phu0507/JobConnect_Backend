@@ -2,6 +2,7 @@ package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
+import com.jobconnect_backend.dto.request.UpdateJobRequest;
 import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.IJobService;
 import jakarta.validation.Valid;
@@ -28,5 +29,17 @@ public class JobController {
     public ResponseEntity<SuccessResponse> createJob(@Valid @RequestBody CreateJobRequest request, BindingResult bindingResult) {
         jobServiceImpl.createJob(request, bindingResult);
         return ResponseEntity.ok(new SuccessResponse("Job created successfully"));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<SuccessResponse> updateJob(@Valid @RequestBody UpdateJobRequest request, BindingResult bindingResult) {
+        jobServiceImpl.updateJob(request, bindingResult);
+        return ResponseEntity.ok(new SuccessResponse("Job updated successfully"));
+    }
+
+    @DeleteMapping("/delete/{jobId}")
+    public ResponseEntity<SuccessResponse> deleteJob(@PathVariable Integer jobId) {
+        jobServiceImpl.deleteJob(jobId);
+        return ResponseEntity.ok(new SuccessResponse("Job deleted successfully"));
     }
 }

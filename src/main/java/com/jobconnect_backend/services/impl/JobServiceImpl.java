@@ -3,6 +3,7 @@ package com.jobconnect_backend.services.impl;
 import com.jobconnect_backend.converters.JobConverter;
 import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
+import com.jobconnect_backend.dto.request.UpdateJobRequest;
 import com.jobconnect_backend.entities.Company;
 import com.jobconnect_backend.entities.Job;
 import com.jobconnect_backend.entities.JobCategory;
@@ -112,6 +113,56 @@ public class JobServiceImpl implements IJobService {
             job.setPriorityLevel(0);
             job.setIsApproved(false);
         }
+        jobRepository.save(job);
+    }
+
+    @Override
+    public void updateJob(UpdateJobRequest request, BindingResult bindingResult) {
+        Map<String, String> errors = validateField.getErrors(bindingResult);
+
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        Job job = jobRepository.findById(request.getJobId())
+                .orElseThrow(() -> new BadRequestException("Job not found"));
+
+        List<Skill> skills = skillRepository.findAllById(request.getSkillIds());
+        if (skills.size() != request.getSkillIds().size()) {
+            throw new BadRequestException("Some skills are invalid");
+        }
+
+        List<JobCategory> categories = jobCategoryRepository.findAllById(request.getCategoryIds());
+        if (categories.size() != request.getCategoryIds().size()) {
+            throw new BadRequestException("Some categories are invalid");
+        }
+
+        job.setTitle(request.getTitle());
+        job.setDescription(request.getDescription());
+        job.setRequirements(request.getRequirements());
+        job.setBenefits(request.getBenefits());
+        job.setSalaryMin(request.getSalaryMin());
+        job.setSalaryMax(request.getSalaryMax());
+        job.setJobType(request.getJobType());
+        job.setEducationLevel(request.getEducationLevel());
+        job.setYearsOfExperience( request.getYearsOfExperience());
+        job.setLocation(request.getLocation());
+        job.setDeadline(request.getDeadline());
+        job.setIsActive(request.getIsActive());
+        job.setIsPending(true);
+        job.setSkills(skills);
+        job.setCategories(categories);
+        job.setIsApproved(false);
+
+        jobRepository.save(job);
+    }
+
+    @Override
+    public void deleteJob(Integer jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new BadRequestException("Job not found"));
+
+        job.setIsDeleted(true);
         jobRepository.save(job);
     }
 }
