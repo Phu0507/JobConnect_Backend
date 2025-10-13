@@ -75,6 +75,11 @@ public class JobController {
         return ResponseEntity.ok(jobServiceImpl.getJobsByCompanyId(companyId, id));
     }
 
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<JobDTO>> getJobsByCategory(@PathVariable Integer categoryId) {
+        return ResponseEntity.ok(jobServiceImpl.getJobsByCategory(categoryId));
+    }
+
     @GetMapping("/{jobSeekerId}/skills-and-categories")
     public ResponseEntity<Map<String, List<Integer>>> getSkillsAndCategories(@PathVariable Integer jobSeekerId) {
         Map<String, List<Integer>> skillsAndCategories = jobServiceImpl.getSkillsAndCategories(jobSeekerId);

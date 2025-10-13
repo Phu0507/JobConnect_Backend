@@ -29,4 +29,9 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
                          @Param("jobCategoryIds") List<Integer> jobCategoryIds);
 
     List<Job> findByCompanyCompanyId(Integer companyId);
+
+    @Query("SELECT j FROM Job j " +
+            "JOIN j.categories c " +
+            "WHERE c.jobCategoryId = :categoryId AND j.isActive = true AND j.isDeleted = false AND j.isExpired = false")
+    List<Job> findByCategoryId(Integer categoryId);
 }

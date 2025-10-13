@@ -22,5 +22,5 @@ public interface IJobService {
     List<JobDTO> searchJobs(String keyword, List<String> locations, List<Integer> jobCategoryIds);
     List<JobDTO> getJobsByCompanyId(Integer companyId, Integer id);
     Map<String, List<Integer>> getSkillsAndCategories(Integer jobSeekerId);
-//    List<JobDTO> getJobsByCategory(Integer categoryId);
+    List<JobDTO> getJobsByCategory(Integer categoryId);
 }
