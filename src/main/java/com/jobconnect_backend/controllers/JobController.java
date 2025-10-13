@@ -2,6 +2,7 @@ package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
+import com.jobconnect_backend.dto.request.RejectJobRequest;
 import com.jobconnect_backend.dto.request.UpdateJobRequest;
 import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.IJobService;
@@ -41,5 +42,17 @@ public class JobController {
     public ResponseEntity<SuccessResponse> deleteJob(@PathVariable Integer jobId) {
         jobServiceImpl.deleteJob(jobId);
         return ResponseEntity.ok(new SuccessResponse("Job deleted successfully"));
+    }
+
+    @PutMapping("/approve/{jobId}")
+    public ResponseEntity<SuccessResponse> approveJob(@PathVariable Integer jobId) {
+        jobServiceImpl.approveJob(jobId);
+        return ResponseEntity.ok(new SuccessResponse("Job approved successfully"));
+    }
+
+    @PutMapping("/reject")
+    public ResponseEntity<SuccessResponse> rejectJob(@RequestBody RejectJobRequest request) {
+        jobServiceImpl.rejectJob(request);
+        return ResponseEntity.ok(new SuccessResponse("Job rejected successfully"));
     }
 }

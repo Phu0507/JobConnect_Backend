@@ -3,6 +3,7 @@ package com.jobconnect_backend.services.impl;
 import com.jobconnect_backend.converters.JobConverter;
 import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
+import com.jobconnect_backend.dto.request.RejectJobRequest;
 import com.jobconnect_backend.dto.request.UpdateJobRequest;
 import com.jobconnect_backend.entities.Company;
 import com.jobconnect_backend.entities.Job;
@@ -163,6 +164,27 @@ public class JobServiceImpl implements IJobService {
                 .orElseThrow(() -> new BadRequestException("Job not found"));
 
         job.setIsDeleted(true);
+        jobRepository.save(job);
+    }
+
+    @Override
+    public void approveJob(Integer jobId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new BadRequestException("Job not found"));
+
+        job.setIsApproved(true);
+        job.setIsPending(false);
+        jobRepository.save(job);
+    }
+
+    @Override
+    public void rejectJob(RejectJobRequest request) {
+        Job job = jobRepository.findById(request.getJobId())
+                .orElseThrow(() -> new BadRequestException("Job not found"));
+
+        job.setIsApproved(false);
+        job.setNote(request.getReason());
+        job.setIsPending(false);
         jobRepository.save(job);
     }
 }
