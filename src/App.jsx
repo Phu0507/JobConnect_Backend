@@ -1,13 +1,15 @@
-import { Link, NavLink } from 'react-router'
-import './App.css'
+import { Link, NavLink } from "react-router";
+import "./App.css";
+import Header from "./components/Header";
+import JobSearch from "./components/Search";
 
 function App() {
   return (
-    <div className='text-blue-500 bg-red-600 text-2xl font-bold'>
-      Hello vite
-       <NavLink to="/thong-tin-ca-nhan">All Concerts</NavLink>
+    <div className="">
+      <Header />
+      <JobSearch />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
