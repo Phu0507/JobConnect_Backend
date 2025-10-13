@@ -187,4 +187,38 @@ public class JobServiceImpl implements IJobService {
         job.setIsPending(false);
         jobRepository.save(job);
     }
+
+    @Override
+    public JobDTO getJobByID(Integer jobId) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() ->
+                new BadRequestException("Job not found"));
+
+//        if(job.getIsDeleted() || !job.getIsActive() || !job.getIsApproved()){
+//            throw new BadRequestException("Job is not available");
+//        }
+
+        return jobConverter.convertToJobDTO(job);
+    }
+
+    @Override
+    public List<JobDTO> searchJobs(String keyword, List<String> locations, List<Integer> jobCategoryIds) {
+        boolean isKeywordEmpty = keyword == null || keyword.trim().isEmpty();
+        boolean isLocationsEmpty = locations == null || locations.isEmpty();
+        boolean isCategoryIdsEmpty = jobCategoryIds == null || jobCategoryIds.isEmpty();
+
+        List<Job> jobs;
+
+        if (isKeywordEmpty && isLocationsEmpty && isCategoryIdsEmpty) {
+            jobs = jobRepository.findAll().stream()
+                    .filter(job -> job.getIsActive() && !job.getIsDeleted() && job.getIsApproved() && !job.getIsExpired())
+                    .toList();
+        } else {
+            jobs = jobRepository.searchJobs(keyword, locations, jobCategoryIds);
+            jobs = jobs.stream()
+                    .filter(job -> job.getIsActive() && !job.getIsDeleted() && job.getIsApproved() && !job.getIsExpired())
+                    .toList();
+        }
+
+        return jobs.stream().map(jobConverter::convertToJobDTO).toList();
+    }
 }

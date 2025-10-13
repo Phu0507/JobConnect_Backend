@@ -55,4 +55,16 @@ public class JobController {
         jobServiceImpl.rejectJob(request);
         return ResponseEntity.ok(new SuccessResponse("Job rejected successfully"));
     }
+
+    @GetMapping("/searchJobs")
+    public ResponseEntity<List<JobDTO>> searchJobs(@RequestParam(required = false) String keyword, @RequestParam(required = false) List<String> location, @RequestParam(required = false) List<Integer> jobCategoryId) {
+        List<JobDTO> jobs = jobServiceImpl.searchJobs(keyword, location, jobCategoryId);
+        return ResponseEntity.ok(jobs);
+    }
+
+    @GetMapping ("/getJobById/{id}")
+    public ResponseEntity<JobDTO> getJobById(@PathVariable Integer id) {
+        JobDTO job = jobServiceImpl.getJobByID(id);
+        return ResponseEntity.ok(job);
+    }
 }

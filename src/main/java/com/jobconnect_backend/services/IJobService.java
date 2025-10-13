@@ -17,4 +17,6 @@ public interface IJobService {
     void deleteJob(Integer jobId);
     void approveJob(Integer jobId);
     void rejectJob(RejectJobRequest request);
+    JobDTO getJobByID(Integer jobId);
+    List<JobDTO> searchJobs(String keyword, List<String> locations, List<Integer> jobCategoryIds);
 }
