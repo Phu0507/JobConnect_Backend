@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/job")
@@ -67,4 +68,17 @@ public class JobController {
         JobDTO job = jobServiceImpl.getJobByID(id);
         return ResponseEntity.ok(job);
     }
+
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<List<JobDTO>> getJobsByCompanyId(@PathVariable Integer companyId,
+                                                           @RequestParam Integer id) {
+        return ResponseEntity.ok(jobServiceImpl.getJobsByCompanyId(companyId, id));
+    }
+
+    @GetMapping("/{jobSeekerId}/skills-and-categories")
+    public ResponseEntity<Map<String, List<Integer>>> getSkillsAndCategories(@PathVariable Integer jobSeekerId) {
+        Map<String, List<Integer>> skillsAndCategories = jobServiceImpl.getSkillsAndCategories(jobSeekerId);
+        return ResponseEntity.ok(skillsAndCategories);
+    }
+
 }

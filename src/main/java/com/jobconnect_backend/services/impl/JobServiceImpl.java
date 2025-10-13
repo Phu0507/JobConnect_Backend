@@ -5,10 +5,8 @@ import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
 import com.jobconnect_backend.dto.request.RejectJobRequest;
 import com.jobconnect_backend.dto.request.UpdateJobRequest;
-import com.jobconnect_backend.entities.Company;
-import com.jobconnect_backend.entities.Job;
-import com.jobconnect_backend.entities.JobCategory;
-import com.jobconnect_backend.entities.Skill;
+import com.jobconnect_backend.entities.*;
+import com.jobconnect_backend.entities.enums.Role;
 import com.jobconnect_backend.exception.BadRequestException;
 import com.jobconnect_backend.repositories.*;
 import com.jobconnect_backend.services.IJobService;
@@ -19,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -221,4 +221,74 @@ public class JobServiceImpl implements IJobService {
 
         return jobs.stream().map(jobConverter::convertToJobDTO).toList();
     }
+
+    @Override
+    public List<JobDTO> getJobsByCompanyId(Integer companyId, Integer id) {
+        List<Job> jobs;
+
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("Company not found"));
+
+        boolean isCompanyOwner = company.getUser().getRole().equals(Role.COMPANY) &&
+                id.equals(companyId);
+
+        if (isCompanyOwner) {
+            jobs = jobRepository.findByCompanyCompanyId(companyId);
+        } else {
+            jobs = jobRepository.findByCompanyCompanyId(companyId)
+                    .stream()
+                    .filter(job -> job.getIsActive() && !job.getIsDeleted() && job.getIsApproved() && !job.getIsExpired())
+                    .toList();
+        }
+
+        return jobs.stream().map(jobConverter::convertToJobDTO).toList();
+    }
+
+    @Override
+    public Map<String, List<Integer>> getSkillsAndCategories(Integer jobSeekerId) {
+        JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new BadRequestException("JobSeeker not found"));
+
+        List<Integer> skillIds = new ArrayList<>();
+        if (jobSeekerProfile.getSkills() != null) {
+            skillIds.addAll(jobSeekerProfile.getSkills().stream()
+                    .map(Skill::getSkillId)
+                    .toList());
+        }
+        if (jobSeekerProfile.getWorkExperiences() != null) {
+            jobSeekerProfile.getWorkExperiences().forEach(workExperience -> {
+                if (workExperience.getSkills() != null) {
+                    workExperience.getSkills().forEach(skill -> {
+                        if (!skillIds.contains(skill.getSkillId())) {
+                            skillIds.add(skill.getSkillId());
+                        }
+                    });
+                }
+            });
+        }
+
+        List<Integer> categoryIds = new ArrayList<>();
+        if (jobSeekerProfile.getWorkExperiences() != null) {
+            jobSeekerProfile.getWorkExperiences().forEach(workExperience -> {
+                if (workExperience.getCategories() != null) {
+                    workExperience.getCategories().forEach(category -> {
+                        if (!categoryIds.contains(category.getJobCategoryId())) {
+                            categoryIds.add(category.getJobCategoryId());
+                        }
+                    });
+                }
+            });
+        }
+
+        Map<String, List<Integer>> result = new HashMap<>();
+        result.put("skillIds", skillIds);
+        result.put("categoryIds", categoryIds);
+        return result;
+    }
+
+//    @Override
+//    public List<JobDTO> getJobsByCategory(Integer categoryId) {
+//        List<Job> list = jobRepository.findByCategoryId(categoryId);
+//        return list.stream().map(jobConverter::convertToJobDTO).toList();
+//    }
 }

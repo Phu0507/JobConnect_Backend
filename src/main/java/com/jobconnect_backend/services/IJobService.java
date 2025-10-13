@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface IJobService {
@@ -19,4 +20,7 @@ public interface IJobService {
     void rejectJob(RejectJobRequest request);
     JobDTO getJobByID(Integer jobId);
     List<JobDTO> searchJobs(String keyword, List<String> locations, List<Integer> jobCategoryIds);
+    List<JobDTO> getJobsByCompanyId(Integer companyId, Integer id);
+    Map<String, List<Integer>> getSkillsAndCategories(Integer jobSeekerId);
+//    List<JobDTO> getJobsByCategory(Integer categoryId);
 }
