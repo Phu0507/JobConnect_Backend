@@ -8,6 +8,7 @@ import com.jobconnect_backend.entities.JobPosition;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,7 @@ public interface IJobService {
     List<JobDTO> getJobsByCategory(Integer categoryId);
     List<JobPosition> getAllJobPosition();
     List<JobDTO> getJobsPriority();
+    //CHUA TEST
+    void pushJobsToAlgolia() throws IOException;
+    List<JobDTO> getProposedJobs(Integer jobSeekerId);
 }

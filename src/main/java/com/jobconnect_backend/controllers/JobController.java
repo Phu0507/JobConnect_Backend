@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +97,18 @@ public class JobController {
     @GetMapping("/priority")
     public ResponseEntity<List<JobDTO>> getJobsPriority() {
         List<JobDTO> jobs = jobServiceImpl.getJobsPriority();
+        return ResponseEntity.ok(jobs);
+    }
+
+    @PostMapping("/pushAlgolia")
+    public ResponseEntity<SuccessResponse> pushJobsToAlgolia() throws IOException {
+        jobServiceImpl.pushJobsToAlgolia();
+        return ResponseEntity.ok(new SuccessResponse("Jobs pushed to Algolia successfully"));
+    }
+
+    @GetMapping("/proposedJobs/{jobSeekerId}")
+    public ResponseEntity<List<JobDTO>> getProposedJobs(@PathVariable Integer jobSeekerId) {
+        List<JobDTO> jobs = jobServiceImpl.getProposedJobs(jobSeekerId);
         return ResponseEntity.ok(jobs);
     }
 

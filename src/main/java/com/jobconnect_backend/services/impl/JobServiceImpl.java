@@ -1,5 +1,10 @@
 package com.jobconnect_backend.services.impl;
 
+import com.algolia.api.SearchClient;
+import com.algolia.config.ClientOptions;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jobconnect_backend.converters.JobConverter;
 import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
@@ -13,10 +18,13 @@ import com.jobconnect_backend.services.IJobService;
 import com.jobconnect_backend.utils.ValidateField;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.util.*;
 
 @Service
@@ -307,5 +315,95 @@ public class JobServiceImpl implements IJobService {
         return jobs.stream()
                 .map(jobConverter::convertToJobDTO)
                 .toList();
+    }
+
+    @Override
+    public void pushJobsToAlgolia() throws IOException {
+        SearchClient client = new SearchClient(algoliaID, algoliaKey, ClientOptions.builder().build());
+
+        try {
+            List<JobDTO> jobs = getAllJobs();
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            List<Map> jobData = jobs.stream()
+                    .map(job -> mapper.convertValue(job, Map.class))
+                    .toList();
+
+            String indexName = "jobs_index";
+            client.saveObjects(indexName, jobData);
+
+            System.out.println("Push " + jobData.size() + " jobs to Algolia index: " + indexName);
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            client.close();
+        }
+    }
+
+    @Override
+    public List<JobDTO> getProposedJobs(Integer jobSeekerId) {
+        JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new BadRequestException("JobSeeker not found"));
+
+        List<Integer> skillIds = new ArrayList<>();
+
+        if (jobSeekerProfile.getSkills() != null) {
+            skillIds.addAll(jobSeekerProfile.getSkills().stream()
+                    .map(Skill::getSkillId)
+                    .toList());
+        }
+
+        if (jobSeekerProfile.getWorkExperiences() != null) {
+            jobSeekerProfile.getWorkExperiences().forEach(workExperience -> {
+                if (workExperience.getSkills() != null) {
+                    workExperience.getSkills().forEach(skill -> {
+                        if (!skillIds.contains(skill.getSkillId())) {
+                            skillIds.add(skill.getSkillId());
+                        }
+                    });
+                }
+            });
+        }
+
+        List<Integer> categoryIds = new ArrayList<>();
+        if (jobSeekerProfile.getWorkExperiences() != null) {
+            jobSeekerProfile.getWorkExperiences().forEach(workExperience -> {
+                if (workExperience.getCategories() != null) {
+                    workExperience.getCategories().forEach(category -> {
+                        if (!categoryIds.contains(category.getJobCategoryId())) {
+                            categoryIds.add(category.getJobCategoryId());
+                        }
+                    });
+                }
+            });
+        }
+
+        if (skillIds.isEmpty() && categoryIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Job> proposedJobs = jobRepository.findProposedJobs(skillIds, categoryIds);
+
+        return proposedJobs.stream()
+                .map(jobConverter::convertToJobDTO)
+                .toList();
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void checkAndUpdateExpiredJobs() {
+        List<Job> activeJobs = jobRepository.findByIsActiveTrueAndIsExpiredFalseAndIsDeletedFalse();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Job job : activeJobs) {
+            if (job.getDeadline() != null && job.getDeadline().isBefore(ChronoLocalDate.from(now))) {
+                job.setIsExpired(true);
+                job.setIsActive(false);
+                jobRepository.save(job);
+            }
+        }
     }
 }
