@@ -2,6 +2,7 @@ package com.jobconnect_backend.services.impl;
 
 import com.jobconnect_backend.config.AwsS3Service;
 import com.jobconnect_backend.dto.dto.UserDTO;
+import com.jobconnect_backend.dto.request.ResetPasswordRequest;
 import com.jobconnect_backend.dto.request.UpdatePersonalInfoRequest;
 import com.jobconnect_backend.entities.Company;
 import com.jobconnect_backend.entities.Industry;
@@ -16,6 +17,7 @@ import com.jobconnect_backend.repositories.UserRepository;
 import com.jobconnect_backend.services.IUserService;
 import com.jobconnect_backend.utils.ValidateField;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -136,5 +138,34 @@ public class UserServiceImpl implements IUserService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void updatePassword(ResetPasswordRequest changePasswordRequest, BindingResult bindingResult) {
+        User user = userRepository.findById(changePasswordRequest.getUserId()).orElseThrow(() -> new BadRequestException("User not found"));
+        Map<String, String> errors = validateField.getErrors(bindingResult);
+
+        if (CHANGE_TYPE_UPDATE.equalsIgnoreCase(changePasswordRequest.getChangeType())) {
+            if (StringUtils.isEmpty(changePasswordRequest.getOldPassword())) {
+                errors.put("oldPassword", "Old password cannot be empty");
+            }
+
+            if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPasswordHash())) {
+                throw new BadRequestException("Old password is incorrect");
+            }
+
+            if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
+                throw new BadRequestException("New password cannot be the same as the old password");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        String encryptedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        user.setPasswordHash(encryptedPassword);
+
+        userRepository.save(user);
     }
 }
