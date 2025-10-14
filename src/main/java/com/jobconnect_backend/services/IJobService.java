@@ -25,4 +25,5 @@ public interface IJobService {
     Map<String, List<Integer>> getSkillsAndCategories(Integer jobSeekerId);
     List<JobDTO> getJobsByCategory(Integer categoryId);
     List<JobPosition> getAllJobPosition();
+    List<JobDTO> getJobsPriority();
 }

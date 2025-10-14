@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -299,5 +296,16 @@ public class JobServiceImpl implements IJobService {
             throw new BadRequestException("No job positions found");
         }
         return jobPositions;
+    }
+
+    @Override
+    public List<JobDTO> getJobsPriority() {
+        List<Job> jobs = jobRepository.findJobsWithPriorityLevel2();
+        if (jobs.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return jobs.stream()
+                .map(jobConverter::convertToJobDTO)
+                .toList();
     }
 }
