@@ -1,12 +1,11 @@
 package com.jobconnect_backend.controllers;
 
+import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.entities.Skill;
 import com.jobconnect_backend.services.ISkillService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,5 +18,26 @@ public class SkillController {
     @GetMapping("/all")
     public ResponseEntity<List<Skill>> getAllSkills() {
         return ResponseEntity.ok(skillServiceImpl.getAllSkills());
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<SuccessResponse> addSkill(@RequestBody String skillName) {
+        skillServiceImpl.addSkill(skillName);
+        return ResponseEntity.ok(new SuccessResponse("Skill added successfully"));
+    }
+
+    @DeleteMapping("/delete/{skillId}")
+    public ResponseEntity<SuccessResponse> deleteSkill(@PathVariable Integer skillId) {
+        skillServiceImpl.deleteSkill(skillId);
+        return ResponseEntity.ok(new SuccessResponse("Skill deleted successfully"));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<SuccessResponse> updateSkill(
+            @RequestParam Integer skillId,
+            @RequestParam String skillName
+    ) {
+        skillServiceImpl.updateSkill(skillId, skillName);
+        return ResponseEntity.ok(new SuccessResponse("Skill updated successfully"));
     }
 }

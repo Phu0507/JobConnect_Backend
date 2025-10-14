@@ -8,4 +8,7 @@ import java.util.List;
 @Service
 public interface ISkillService {
     List<Skill> getAllSkills();
+    void addSkill(String skillName);
+    void deleteSkill(Integer skillId);
+    void updateSkill(Integer skillId, String skillName);
 }
