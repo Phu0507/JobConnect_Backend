@@ -4,6 +4,7 @@ import com.jobconnect_backend.dto.dto.JobDTO;
 import com.jobconnect_backend.dto.request.CreateJobRequest;
 import com.jobconnect_backend.dto.request.RejectJobRequest;
 import com.jobconnect_backend.dto.request.UpdateJobRequest;
+import com.jobconnect_backend.entities.JobPosition;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -23,4 +24,5 @@ public interface IJobService {
     List<JobDTO> getJobsByCompanyId(Integer companyId, Integer id);
     Map<String, List<Integer>> getSkillsAndCategories(Integer jobSeekerId);
     List<JobDTO> getJobsByCategory(Integer categoryId);
+    List<JobPosition> getAllJobPosition();
 }

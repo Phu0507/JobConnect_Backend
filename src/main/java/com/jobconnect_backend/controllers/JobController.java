@@ -5,6 +5,7 @@ import com.jobconnect_backend.dto.request.CreateJobRequest;
 import com.jobconnect_backend.dto.request.RejectJobRequest;
 import com.jobconnect_backend.dto.request.UpdateJobRequest;
 import com.jobconnect_backend.dto.response.SuccessResponse;
+import com.jobconnect_backend.entities.JobPosition;
 import com.jobconnect_backend.services.IJobService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,12 @@ public class JobController {
     public ResponseEntity<Map<String, List<Integer>>> getSkillsAndCategories(@PathVariable Integer jobSeekerId) {
         Map<String, List<Integer>> skillsAndCategories = jobServiceImpl.getSkillsAndCategories(jobSeekerId);
         return ResponseEntity.ok(skillsAndCategories);
+    }
+
+    @GetMapping("/jobPosition")
+    public ResponseEntity<List<JobPosition>> getAllJobPosition() {
+        List<JobPosition> jobPositions = jobServiceImpl.getAllJobPosition();
+        return ResponseEntity.ok(jobPositions);
     }
 
 }

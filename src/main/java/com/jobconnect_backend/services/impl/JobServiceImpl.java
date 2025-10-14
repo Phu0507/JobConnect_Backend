@@ -291,4 +291,13 @@ public class JobServiceImpl implements IJobService {
         List<Job> list = jobRepository.findByCategoryId(categoryId);
         return list.stream().map(jobConverter::convertToJobDTO).toList();
     }
+
+    @Override
+    public List<JobPosition> getAllJobPosition() {
+        List<JobPosition> jobPositions = jobPositionRepository.findAll();
+        if (jobPositions.isEmpty()) {
+            throw new BadRequestException("No job positions found");
+        }
+        return jobPositions;
+    }
 }
