@@ -10,5 +10,5 @@ import java.util.List;
 @Service
 public interface IUserService {
     List<UserDTO> getAllUsers();
-//    void updateProfileInfo(UpdatePersonalInfoRequest request, BindingResult bindingResult);
+    void updateProfileInfo(UpdatePersonalInfoRequest request, BindingResult bindingResult);
 }
