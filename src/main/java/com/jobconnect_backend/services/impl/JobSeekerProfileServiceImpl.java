@@ -173,4 +173,15 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
 
         workExperienceRepository.save(workExperience);
     }
+
+    @Override
+    public void deleteWorkExperience(Integer jobSeekerId, Integer workExperienceId) {
+        boolean exists = workExperienceRepository.existsByJobSeekerProfileProfileId(
+                jobSeekerId);
+        if (!exists) {
+            throw new BadRequestException("Work experience not found with ID: " + workExperienceId);
+        } else {
+            workExperienceRepository.deleteById(workExperienceId);
+        }
+    }
 }
