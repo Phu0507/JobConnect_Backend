@@ -2,6 +2,7 @@ package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
 import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
+import com.jobconnect_backend.dto.request.UpdateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.IJobSeekerProfileService;
@@ -38,5 +39,11 @@ public class JobSeekerProfileController {
     public ResponseEntity<SuccessResponse> createWorkExperience(@RequestParam Integer jobSeekerId, @Valid @RequestBody CreateWorkExperienceRequest createWorkExperienceRequest, BindingResult result) {
         jobSeekerProfileServiceImpl.addWorkExperience(jobSeekerId, createWorkExperienceRequest, result);
         return ResponseEntity.ok(new SuccessResponse("Work Experience created successfully"));
+    }
+
+    @PostMapping("/updateWorkExperience")
+    public ResponseEntity<SuccessResponse> updateWorkExperience(@RequestParam Integer jobSeekerId, @Valid @RequestBody UpdateWorkExperienceRequest updateWorkExperienceRequest, BindingResult result) {
+        jobSeekerProfileServiceImpl.updateWorkExperience(jobSeekerId, updateWorkExperienceRequest, result);
+        return ResponseEntity.ok(new SuccessResponse("Work Experience updated successfully"));
     }
 }

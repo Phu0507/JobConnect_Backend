@@ -7,6 +7,7 @@ import com.jobconnect_backend.converters.WorkExperienceConverter;
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
 import com.jobconnect_backend.dto.dto.WorkExperienceDTO;
 import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
+import com.jobconnect_backend.dto.request.UpdateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.entities.JobCategory;
 import com.jobconnect_backend.entities.JobSeekerProfile;
@@ -138,6 +139,37 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
                 .categories(getJobCategoriesByIds(request.getCategories()))
                 .jobSeekerProfile(jobSeekerProfile)
                 .build();
+
+        workExperienceRepository.save(workExperience);
+    }
+
+    @Override
+    public void updateWorkExperience(Integer jobSeekerId, UpdateWorkExperienceRequest request, BindingResult result) {
+        JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new BadRequestException("JobSeekerProfile not found"));
+
+        Map<String, String> errors = validateField.getErrors(result);
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        WorkExperience workExperience = workExperienceRepository.findById(request.getWorkExperienceId())
+                .orElseThrow(() -> new BadRequestException("WorkExperience not found with ID: " + request.getWorkExperienceId()));
+
+        workExperience.setJobType(request.getJobType());
+        workExperience.setDescription(request.getDescription());
+        workExperience.setStartDate(request.getStartDate());
+        workExperience.setEndDate(request.getEndDate());
+
+        workExperience.setCompany(companyRepository.findById(request.getCompanyId())
+                .orElseThrow(() -> new BadRequestException("Company not found")));
+
+        workExperience.setJobPosition(jobPositionRepository.findById(request.getJobPositionId())
+                .orElseThrow(() -> new BadRequestException("Job position not found")));
+
+        workExperience.setSkills(getSkillsByIds(request.getSkills()));
+        workExperience.setCategories(getJobCategoriesByIds(request.getCategories()));
+        workExperience.setJobSeekerProfile(jobSeekerProfile);
 
         workExperienceRepository.save(workExperience);
     }
