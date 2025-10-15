@@ -1,11 +1,15 @@
 package com.jobconnect_backend.services;
 
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
+import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 
 public interface IJobSeekerProfileService {
     List<JobSeekerProfileDTO> getAllJobSeekerProfiles();
     JobSeekerProfileResponse getProfileByUserId(Integer userId);
+    JobSeekerProfileDTO getProfileById(Integer jobSeekerId);
+    void addWorkExperience(Integer jobSeekerId, CreateWorkExperienceRequest request, BindingResult result);
 }

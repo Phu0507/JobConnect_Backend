@@ -1,14 +1,15 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
+import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
+import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.IJobSeekerProfileService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,5 +27,16 @@ public class JobSeekerProfileController {
     @GetMapping("/getProfileByUserId")
     public ResponseEntity<JobSeekerProfileResponse> getJobSeekerProfile(@RequestParam Integer userId) {
         return ResponseEntity.ok(jobSeekerProfileServiceImpl.getProfileByUserId(userId));
+    }
+
+    @GetMapping("/getProfileById")
+    public ResponseEntity<JobSeekerProfileDTO> getJobSeekerProfileById(@RequestParam Integer jobSeekerId) {
+        return ResponseEntity.ok(jobSeekerProfileServiceImpl.getProfileById(jobSeekerId));
+    }
+
+    @PostMapping("/addWorkExperience")
+    public ResponseEntity<SuccessResponse> createWorkExperience(@RequestParam Integer jobSeekerId, @Valid @RequestBody CreateWorkExperienceRequest createWorkExperienceRequest, BindingResult result) {
+        jobSeekerProfileServiceImpl.addWorkExperience(jobSeekerId, createWorkExperienceRequest, result);
+        return ResponseEntity.ok(new SuccessResponse("Work Experience created successfully"));
     }
 }

@@ -6,26 +6,30 @@ import com.jobconnect_backend.converters.SkillConverter;
 import com.jobconnect_backend.converters.WorkExperienceConverter;
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
 import com.jobconnect_backend.dto.dto.WorkExperienceDTO;
+import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.entities.JobCategory;
 import com.jobconnect_backend.entities.JobSeekerProfile;
 import com.jobconnect_backend.entities.Skill;
+import com.jobconnect_backend.entities.WorkExperience;
 import com.jobconnect_backend.exception.BadRequestException;
 import com.jobconnect_backend.repositories.*;
 import com.jobconnect_backend.services.IJobSeekerProfileService;
 import com.jobconnect_backend.utils.ValidateField;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
-//    private final WorkExperienceRepository workExperienceRepository;
+    private final WorkExperienceRepository workExperienceRepository;
     private final CompanyRepository companyRepository;
     private final JobPositionRepository jobPositionRepository;
     private final JobCategoryRepository jobCategoryRepository;
@@ -92,5 +96,49 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
                 .email(jobSeekerProfile.getUser().getEmail())
                 .phone(jobSeekerProfile.getUser().getPhone())
                 .build();
+    }
+
+    @Override
+    public JobSeekerProfileDTO getProfileById(Integer jobSeekerId) {
+        JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new BadRequestException("JobSeekerProfile not found"));
+        return jobSeekerProfileConverter.convertToJobSeekerProfileDTO(jobSeekerProfile);
+    }
+
+    @Override
+    public void addWorkExperience(Integer jobSeekerId, CreateWorkExperienceRequest request, BindingResult result) {
+        JobSeekerProfile jobSeekerProfile = jobSeekerProfileRepository.findById(jobSeekerId)
+                .orElseThrow(() -> new BadRequestException("JobSeekerProfile not found"));
+
+        Map<String, String> errors = validateField.getErrors(result);
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        boolean exists = workExperienceRepository.existsByJobSeekerProfileAndCompanyAndJobPosition(
+                jobSeekerProfile,
+                companyRepository.findById(request.getCompanyId()).orElseThrow(() -> new BadRequestException("Company not found")),
+                jobPositionRepository.findById(request.getJobPositionId()).orElseThrow(() -> new BadRequestException("Job position not found"))
+        );
+
+        if (exists) {
+            throw new BadRequestException("Work experience already exists.");
+        }
+
+        WorkExperience workExperience = WorkExperience.builder()
+                .jobType(request.getJobType())
+                .description(request.getDescription())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .company(companyRepository.findById(request.getCompanyId())
+                        .orElseThrow(() -> new BadRequestException("Company not found")))
+                .jobPosition(jobPositionRepository.findById(request.getJobPositionId())
+                        .orElseThrow(() -> new BadRequestException("Job position not found")))
+                .skills(getSkillsByIds(request.getSkills()))
+                .categories(getJobCategoriesByIds(request.getCategories()))
+                .jobSeekerProfile(jobSeekerProfile)
+                .build();
+
+        workExperienceRepository.save(workExperience);
     }
 }
