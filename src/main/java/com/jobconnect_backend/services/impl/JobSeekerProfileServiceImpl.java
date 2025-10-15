@@ -5,6 +5,8 @@ import com.jobconnect_backend.converters.ResumeConverter;
 import com.jobconnect_backend.converters.SkillConverter;
 import com.jobconnect_backend.converters.WorkExperienceConverter;
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
+import com.jobconnect_backend.dto.dto.WorkExperienceDTO;
+import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.entities.JobCategory;
 import com.jobconnect_backend.entities.JobSeekerProfile;
 import com.jobconnect_backend.entities.Skill;
@@ -62,5 +64,33 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
         return jobSeekerProfiles.stream()
                 .map(jobSeekerProfileConverter::convertToJobSeekerProfileDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public JobSeekerProfileResponse getProfileByUserId(Integer userId) {
+        JobSeekerProfile jobSeekerProfile = getJobSeekerProfile(userId);
+
+        List<WorkExperienceDTO> workExperiences = jobSeekerProfile.getWorkExperiences().stream()
+                .map(workExperienceConverter::convertToWorkExperienceDTO)
+                .collect(Collectors.toList());
+
+        return JobSeekerProfileResponse.builder()
+                .resumeList(jobSeekerProfile.getResumes().stream()
+                        .filter(resume -> !resume.isDeleted())
+                        .map(resumeConverter::convertToResumeDTO)
+                        .collect(Collectors.toList()))
+                .workExperiences(workExperiences)
+                .avatar(jobSeekerProfile.getAvatar())
+                .title(jobSeekerProfile.getTitle())
+                .skills(jobSeekerProfile.getSkills().stream()
+                        .map(skillConverter::convertToSkillDTO)
+                        .collect(Collectors.toList()))
+                .firstName(jobSeekerProfile.getFirstName())
+                .address(jobSeekerProfile.getAddress())
+                .birthDay(jobSeekerProfile.getUser().getJobSeekerProfile().getBirthDay())
+                .lastName(jobSeekerProfile.getLastName())
+                .email(jobSeekerProfile.getUser().getEmail())
+                .phone(jobSeekerProfile.getUser().getPhone())
+                .build();
     }
 }
