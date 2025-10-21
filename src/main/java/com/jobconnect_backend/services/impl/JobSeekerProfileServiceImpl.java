@@ -7,6 +7,7 @@ import com.jobconnect_backend.converters.WorkExperienceConverter;
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
 import com.jobconnect_backend.dto.dto.WorkExperienceDTO;
 import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
+import com.jobconnect_backend.dto.request.SkillRequest;
 import com.jobconnect_backend.dto.request.UpdateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.entities.JobCategory;
@@ -183,5 +184,25 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
         } else {
             workExperienceRepository.deleteById(workExperienceId);
         }
+    }
+
+    @Override
+    public void addSkills(SkillRequest createSkillsRequest, BindingResult result) {
+        Map<String, String> errors = validateField.getErrors(result);
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        JobSeekerProfile profile = getJobSeekerProfile(createSkillsRequest.getProfileId());
+        List<Skill> existingSkills = profile.getSkills();
+        List<Skill> newSkills = getSkillsByIds(createSkillsRequest.getSkills());
+
+        for (Skill skill : newSkills) {
+            if (!existingSkills.contains(skill)) {
+                existingSkills.add(skill);
+            }
+        }
+
+        jobSeekerProfileRepository.save(profile);
     }
 }

@@ -2,6 +2,7 @@ package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.JobSeekerProfileDTO;
 import com.jobconnect_backend.dto.request.CreateWorkExperienceRequest;
+import com.jobconnect_backend.dto.request.SkillRequest;
 import com.jobconnect_backend.dto.request.UpdateWorkExperienceRequest;
 import com.jobconnect_backend.dto.response.JobSeekerProfileResponse;
 import com.jobconnect_backend.dto.response.SuccessResponse;
@@ -51,5 +52,12 @@ public class JobSeekerProfileController {
     public ResponseEntity<SuccessResponse> deleteWorkExperience(@RequestParam Integer jobSeekerId, @RequestParam Integer workExperienceId) {
         jobSeekerProfileServiceImpl.deleteWorkExperience(jobSeekerId, workExperienceId);
         return ResponseEntity.ok(new SuccessResponse("Work Experience deleted successfully"));
+    }
+
+    // truyen vao id user
+    @PostMapping("/addSkill")
+    public ResponseEntity<SuccessResponse> createSkills(@Valid @RequestBody SkillRequest createSkillsRequest, BindingResult result) {
+        jobSeekerProfileServiceImpl.addSkills(createSkillsRequest, result);
+        return ResponseEntity.ok(new SuccessResponse("Skill created successfully"));
     }
 }
