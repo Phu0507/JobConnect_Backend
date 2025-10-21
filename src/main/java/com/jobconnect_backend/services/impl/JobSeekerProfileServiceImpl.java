@@ -243,4 +243,17 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
                 .map(jobSeekerProfileConverter::convertToJobSeekerProfileDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<JobSeekerProfileDTO> findJobSeekersByCompanyIndustry(Integer companyId) {
+        List<JobSeekerProfile> jobSeekers = jobSeekerProfileRepository.findJobSeekersByCompanyIndustry(companyId);
+
+        if (jobSeekers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return jobSeekers.stream()
+                .map(jobSeekerProfileConverter::convertToJobSeekerProfileDTO)
+                .collect(Collectors.toList());
+    }
 }

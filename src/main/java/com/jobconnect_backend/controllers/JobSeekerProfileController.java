@@ -67,6 +67,7 @@ public class JobSeekerProfileController {
         return ResponseEntity.ok(new SuccessResponse("Skill updated successfully"));
     }
 
+    //tìm kiếm ưng viên theo skill, job category, location,...
     @GetMapping("/search-jobseekers")
     public ResponseEntity<List<JobSeekerProfileDTO>> searchJobSeekers(
             @RequestParam(required = false) String keyword,
@@ -76,6 +77,13 @@ public class JobSeekerProfileController {
         List<JobSeekerProfileDTO> jobSeekers = jobSeekerProfileServiceImpl
                 .searchJobSeekers(keyword, categoryIds, locations, companyId);
 
+        return ResponseEntity.ok(jobSeekers);
+    }
+
+    //tìm tất cả ứng viên (JobSeekers) có ít nhất một kinh nghiệm làm việc trong ngành nghề mà công ty X đang hoạt động
+    @GetMapping("/find-jobseekers-by-company-industry")
+    public ResponseEntity<List<JobSeekerProfileDTO>> findJobSeekersByCompanyIndustry(@RequestParam Integer companyId) {
+        List<JobSeekerProfileDTO> jobSeekers = jobSeekerProfileServiceImpl.findJobSeekersByCompanyIndustry(companyId);
         return ResponseEntity.ok(jobSeekers);
     }
 }
