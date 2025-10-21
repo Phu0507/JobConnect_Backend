@@ -66,4 +66,16 @@ public class JobSeekerProfileController {
         jobSeekerProfileServiceImpl.updateSkills(skillRequest, bindingResult);
         return ResponseEntity.ok(new SuccessResponse("Skill updated successfully"));
     }
+
+    @GetMapping("/search-jobseekers")
+    public ResponseEntity<List<JobSeekerProfileDTO>> searchJobSeekers(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) List<Integer> categoryIds,
+            @RequestParam(required = false) List<String> locations,
+            @RequestParam(required = false) Integer companyId) {
+        List<JobSeekerProfileDTO> jobSeekers = jobSeekerProfileServiceImpl
+                .searchJobSeekers(keyword, categoryIds, locations, companyId);
+
+        return ResponseEntity.ok(jobSeekers);
+    }
 }

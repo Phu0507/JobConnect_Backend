@@ -220,4 +220,27 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
 
         jobSeekerProfileRepository.save(profile);
     }
+
+    @Override
+    public List<JobSeekerProfileDTO> searchJobSeekers(String keyword, List<Integer> categoryIds, List<String> locations, Integer companyId) {
+        List<JobSeekerProfile> jobSeekers;
+
+        boolean isKeywordEmpty = keyword == null || keyword.trim().isEmpty();
+        boolean isCategoryIdsEmpty = categoryIds == null || categoryIds.isEmpty();
+        boolean isLocationsEmpty = locations == null || locations.isEmpty();
+
+        if (isKeywordEmpty && isCategoryIdsEmpty && isLocationsEmpty) {
+            jobSeekers = jobSeekerProfileRepository.findJobSeekersByCompanyIndustry(companyId);
+        } else {
+            jobSeekers = jobSeekerProfileRepository.searchJobSeekers(keyword, categoryIds, locations);
+        }
+
+        if (jobSeekers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return jobSeekers.stream()
+                .map(jobSeekerProfileConverter::convertToJobSeekerProfileDTO)
+                .collect(Collectors.toList());
+    }
 }
