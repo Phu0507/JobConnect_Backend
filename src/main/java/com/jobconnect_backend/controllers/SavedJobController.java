@@ -20,4 +20,10 @@ public class SavedJobController {
         savedJobServiceImpl.saveJob(jobId, jobSeekerProfileId);
         return ResponseEntity.ok(new SuccessResponse("Job saved successfully"));
     }
+
+    @PostMapping("/unsave")
+    public ResponseEntity<SuccessResponse> unsaveJob(@RequestParam Integer jobId, @RequestParam Integer jobSeekerProfileId) {
+        savedJobServiceImpl.unsaveJob(jobId, jobSeekerProfileId);
+        return ResponseEntity.ok(new SuccessResponse("Job unsaved successfully"));
+    }
 }

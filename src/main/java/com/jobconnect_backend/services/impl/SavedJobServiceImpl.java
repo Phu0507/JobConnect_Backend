@@ -40,4 +40,12 @@ public class SavedJobServiceImpl implements ISavedJobService {
 
         savedJobRepository.save(savedJob);
     }
+
+    @Override
+    public void unsaveJob(Integer jobId, Integer jobSeekerProfileId) {
+        SavedJob savedJob = savedJobRepository.findByJobJobIdAndJobSeekerProfileProfileId(jobId, jobSeekerProfileId)
+                .orElseThrow(() -> new BadRequestException("Saved job not found"));
+
+        savedJobRepository.delete(savedJob);
+    }
 }
