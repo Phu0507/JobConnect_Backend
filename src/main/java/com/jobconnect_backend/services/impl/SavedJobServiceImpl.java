@@ -1,5 +1,6 @@
 package com.jobconnect_backend.services.impl;
 
+import com.jobconnect_backend.dto.response.SavedJobResponse;
 import com.jobconnect_backend.entities.Job;
 import com.jobconnect_backend.entities.JobSeekerProfile;
 import com.jobconnect_backend.entities.SavedJob;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,28 @@ public class SavedJobServiceImpl implements ISavedJobService {
     private final SavedJobRepository savedJobRepository;
     private final JobRepository jobRepository;
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
+
+    @Override
+    public List<SavedJobResponse> getListSavedJobs(Integer jobSeekerProfileId) {
+        List<SavedJob> list = savedJobRepository.findByJobSeekerProfileProfileId(jobSeekerProfileId);
+
+        return list.stream()
+                .map(savedJob -> SavedJobResponse.builder()
+                        .jobId(savedJob.getJob().getJobId())
+                        .companyId(savedJob.getJob().getCompany().getCompanyId())
+                        .jobName(savedJob.getJob().getTitle())
+                        .companyName(savedJob.getJob().getCompany().getCompanyName())
+                        .companyLogo(savedJob.getJob().getCompany().getLogoPath())
+                        .salaryMin(savedJob.getJob().getSalaryMin())
+                        .salaryMax(savedJob.getJob().getSalaryMax())
+                        .jobType(savedJob.getJob().getJobType())
+                        .location(savedJob.getJob().getLocation())
+                        .postedAt(savedJob.getJob().getPostedAt())
+                        .deadline(savedJob.getJob().getDeadline())
+                        .savedAt(savedJob.getSavedAt())
+                        .build())
+                .toList();
+    }
 
     @Override
     public void saveJob(Integer jobId, Integer jobSeekerProfileId) {
