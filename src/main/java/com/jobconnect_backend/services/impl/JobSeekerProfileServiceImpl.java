@@ -205,4 +205,19 @@ public class JobSeekerProfileServiceImpl implements IJobSeekerProfileService {
 
         jobSeekerProfileRepository.save(profile);
     }
+
+    @Override
+    public void updateSkills(SkillRequest skillRequest, BindingResult bindingResult) {
+        Map<String, String> errors = validateField.getErrors(bindingResult);
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Please complete all required fields to proceed.", errors);
+        }
+
+        JobSeekerProfile profile = getJobSeekerProfile(skillRequest.getProfileId());
+
+        List<Skill> skills = getSkillsByIds(skillRequest.getSkills());
+        profile.setSkills(skills);
+
+        jobSeekerProfileRepository.save(profile);
+    }
 }

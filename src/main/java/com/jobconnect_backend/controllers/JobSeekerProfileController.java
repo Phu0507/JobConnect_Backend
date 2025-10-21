@@ -60,4 +60,10 @@ public class JobSeekerProfileController {
         jobSeekerProfileServiceImpl.addSkills(createSkillsRequest, result);
         return ResponseEntity.ok(new SuccessResponse("Skill created successfully"));
     }
+
+    @PostMapping("/updateSkill")
+    public ResponseEntity<SuccessResponse> updateSkills(@Valid @RequestBody SkillRequest skillRequest, BindingResult bindingResult) {
+        jobSeekerProfileServiceImpl.updateSkills(skillRequest, bindingResult);
+        return ResponseEntity.ok(new SuccessResponse("Skill updated successfully"));
+    }
 }

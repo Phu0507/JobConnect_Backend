@@ -17,4 +17,5 @@ public interface IJobSeekerProfileService {
     void updateWorkExperience(Integer jobSeekerId, UpdateWorkExperienceRequest request, BindingResult result);
     void deleteWorkExperience(Integer jobSeekerId, Integer workExperienceId);
     void addSkills(SkillRequest createSkillsRequest, BindingResult result);
+    void updateSkills(SkillRequest skillRequest, BindingResult bindingResult);
 }
