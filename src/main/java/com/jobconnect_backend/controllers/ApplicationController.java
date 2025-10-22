@@ -40,4 +40,10 @@ public class ApplicationController {
         List<ApplicationStatusResponse> response = applicationServiceImpl.getApplicationOfJobByJobSeeker(jobSeekerId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{applicationId}/history")
+    public ResponseEntity<ApplicationStatusResponse> getApplicationHistory(@PathVariable Integer applicationId) {
+        ApplicationStatusResponse history = applicationServiceImpl.getApplicationStatusHistory(applicationId);
+        return ResponseEntity.ok(history);
+    }
 }

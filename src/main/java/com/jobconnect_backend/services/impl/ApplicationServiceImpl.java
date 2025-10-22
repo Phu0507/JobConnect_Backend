@@ -137,4 +137,29 @@ public class ApplicationServiceImpl implements IApplicationService {
         return getApplicationStatusResponses(applications);
     }
 
+    // lấy lịch sử trạng thái (status history) của một đơn ứng tuyển (application) theo applicationId
+    @Override
+    public ApplicationStatusResponse getApplicationStatusHistory(Integer applicationId) {
+        List<ApplicationStatusHistory> list = historyRepository.findByApplicationApplicationId(applicationId);
+
+        if(list.isEmpty()){
+            throw new BadRequestException("No history found for the given application ID");
+        }
+
+        return ApplicationStatusResponse.builder()
+                .applicationId(applicationId)
+                .job(jobConverter.convertToJobDTO(list.get(0).getApplication().getJob()))
+                .jobSeekerProfile(jobSeekerProfileConverter.convertToJobSeekerProfileDTO(list.get(0).getApplication().getJobSeekerProfile()))
+                .resumeApplied(resumeConverter.convertToResumeDTO(list.get(0).getApplication().getResume()))
+                .statusDTOList(
+                        list.stream().map(
+                                        history -> ApplicationStatusDTO.builder()
+                                                .status(history.getApplicationStatus())
+                                                .time(history.getTime())
+                                                .build())
+                                .collect(Collectors.toList())
+                )
+                .build();
+    }
+
 }

@@ -11,4 +11,5 @@ public interface IApplicationService {
     void applyForJob(ApplicationRequest request);
     List<ApplicationOfJobResponse> getApplicationOfJob(Integer jobId);
     List<ApplicationStatusResponse> getApplicationOfJobByJobSeeker(Integer jobSeekerId);
+    ApplicationStatusResponse getApplicationStatusHistory(Integer applicationId);
 }
