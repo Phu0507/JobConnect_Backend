@@ -31,4 +31,10 @@ public class CompanyServiceImpl implements ICompanyService {
 
         return companyConverter.convertToCompanyDTO(company);
     }
+
+    @Override
+    public List<CompanyDTO> findCompanyByIndustryAndCompanyName(Integer industryId, String companyName) {
+        List<Company> company = companyRepository.findByIndustryOrCompanyName(industryId, companyName);
+        return company.stream().map(companyConverter::convertToCompanyDTO).toList();
+    }
 }
