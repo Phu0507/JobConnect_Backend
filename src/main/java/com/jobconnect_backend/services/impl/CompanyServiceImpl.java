@@ -3,6 +3,7 @@ package com.jobconnect_backend.services.impl;
 import com.jobconnect_backend.converters.CompanyConverter;
 import com.jobconnect_backend.dto.dto.CompanyDTO;
 import com.jobconnect_backend.dto.request.CardRequest;
+import com.jobconnect_backend.dto.response.CardInfoResponse;
 import com.jobconnect_backend.entities.CardCompany;
 import com.jobconnect_backend.entities.Company;
 import com.jobconnect_backend.entities.User;
@@ -66,5 +67,22 @@ public class CompanyServiceImpl implements ICompanyService {
                 .build();
 
         cardCompanyRepository.save(cardCompany);
+    }
+
+    @Override
+    public CardInfoResponse getCardInfoByCompanyId(Integer userId) {
+        CardCompany cardCompany = cardCompanyRepository.findByUserUserId(userId);
+        if (cardCompany == null) {
+            throw new BadRequestException("Card not found for user");
+        }
+
+        return CardInfoResponse.builder()
+                .number(cardCompany.getNumber())
+                .type("card")
+                .validToMonth(cardCompany.getValidToMonth())
+                .validToYear(cardCompany.getValidToYear())
+                .ccv(cardCompany.getCcv())
+                .postalCode(cardCompany.getPostalCode())
+                .build();
     }
 }

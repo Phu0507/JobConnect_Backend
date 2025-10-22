@@ -2,6 +2,7 @@ package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.CompanyDTO;
 import com.jobconnect_backend.dto.request.CardRequest;
+import com.jobconnect_backend.dto.response.CardInfoResponse;
 import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.ICompanyService;
 import lombok.RequiredArgsConstructor;
@@ -37,5 +38,10 @@ public class CompanyController {
     public ResponseEntity<SuccessResponse> createCardPaymentForCompany(@RequestBody CardRequest cardRequest) {
         companyServiceImpl.createCardPaymentForCompany(cardRequest);
         return ResponseEntity.ok(new SuccessResponse("Card payment created successfully"));
+    }
+
+    @GetMapping("/cardInfo/{userId}")
+    public ResponseEntity<CardInfoResponse> getCardInfoByCompanyId(@PathVariable Integer userId) {
+        return ResponseEntity.ok(companyServiceImpl.getCardInfoByCompanyId(userId));
     }
 }
