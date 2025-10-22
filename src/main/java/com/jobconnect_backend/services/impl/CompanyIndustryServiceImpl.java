@@ -38,4 +38,10 @@ public class CompanyIndustryServiceImpl implements ICompanyIndustryService {
                 .build();
         industryRepository.save(industry);
     }
+
+    @Override
+    public void deleteCompanyIndustry(Integer industryId) {
+
+        industryRepository.deleteById(industryId);
+    }
 }

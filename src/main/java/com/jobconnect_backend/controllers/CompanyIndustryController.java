@@ -5,10 +5,7 @@ import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.ICompanyIndustryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,5 +24,11 @@ public class CompanyIndustryController {
     public ResponseEntity<SuccessResponse> addCompanyIndustry(String companyIndustryName) {
         companyIndustryServiceImpl.addCompanyIndustry(companyIndustryName);
         return ResponseEntity.ok(new SuccessResponse("Company industry added successfully"));
+    }
+
+    @DeleteMapping("/delete/{companyIndustryId}")
+    public ResponseEntity<SuccessResponse> deleteCompanyIndustry(@PathVariable Integer companyIndustryId) {
+        companyIndustryServiceImpl.deleteCompanyIndustry(companyIndustryId);
+        return ResponseEntity.ok(new SuccessResponse("Company industry deleted successfully"));
     }
 }
