@@ -1,6 +1,7 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.request.ApplicationRequest;
+import com.jobconnect_backend.dto.response.ApplicationOfJobResponse;
 import com.jobconnect_backend.dto.response.ApplicationStatusResponse;
 import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.impl.ApplicationServiceImpl;
@@ -26,5 +27,11 @@ public class ApplicationController {
     public ResponseEntity<SuccessResponse> applyForJob(@RequestBody ApplicationRequest request) {
         applicationServiceImpl.applyForJob(request);
         return ResponseEntity.ok(new SuccessResponse("Application created successfully"));
+    }
+
+    @GetMapping("/job/{jobId}")
+    public ResponseEntity<List<ApplicationOfJobResponse>> getApplicationOfJob(@PathVariable Integer jobId) {
+        List<ApplicationOfJobResponse> response = applicationServiceImpl.getApplicationOfJob(jobId);
+        return ResponseEntity.ok(response);
     }
 }

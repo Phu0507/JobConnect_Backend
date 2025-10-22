@@ -5,6 +5,7 @@ import com.jobconnect_backend.converters.JobSeekerProfileConverter;
 import com.jobconnect_backend.converters.ResumeConverter;
 import com.jobconnect_backend.dto.dto.ApplicationStatusDTO;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
+import com.jobconnect_backend.dto.response.ApplicationOfJobResponse;
 import com.jobconnect_backend.dto.response.ApplicationStatusResponse;
 import com.jobconnect_backend.entities.*;
 import com.jobconnect_backend.entities.enums.ApplicationStatus;
@@ -27,7 +28,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationStatusHistoryRepository historyRepository;
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
     private final ResumeRepository resumeRepository;
-//    private final NotificationServiceImplService notificationServiceImpl;
+    //    private final NotificationServiceImplService notificationServiceImpl;
     private final JobSeekerProfileConverter jobSeekerProfileConverter;
     private final ResumeConverter resumeConverter;
     private final JobConverter jobConverter;
@@ -70,7 +71,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         Job job = jobRepository.findById(request.getJobId())
                 .orElseThrow(() -> new BadRequestException("Job not found"));
 
-        if(!job.getIsActive() || job.getIsDeleted() || !job.getIsApproved()){
+        if (!job.getIsActive() || job.getIsDeleted() || !job.getIsApproved()) {
             throw new BadRequestException("Job is not available for application");
         }
 
@@ -107,4 +108,24 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .build();
         historyRepository.save(history);
     }
+
+    // Lấy danh sách tất cả các đơn ứng tuyển (Application) của một công việc cụ thể theo job id
+    @Override
+    public List<ApplicationOfJobResponse> getApplicationOfJob(Integer jobId) {
+        List<Application> applications = applicationRepository.findByJobJobId(jobId);
+
+        if(applications.isEmpty()){
+            throw new BadRequestException("No applications found for the given job ID");
+        }
+
+        return applications.stream()
+                .map(application -> ApplicationOfJobResponse.builder()
+                        .applicationId(application.getApplicationId())
+                        .JobSeekerProfileDTO(jobSeekerProfileConverter.convertToJobSeekerProfileDTO(application.getJobSeekerProfile()))
+                        .appliedAt(application.getAppliedAt())
+                        .status(application.getApplicationStatus())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }
