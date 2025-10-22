@@ -1,6 +1,8 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.CompanyDTO;
+import com.jobconnect_backend.dto.request.CardRequest;
+import com.jobconnect_backend.dto.response.SuccessResponse;
 import com.jobconnect_backend.services.ICompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +31,11 @@ public class CompanyController {
             @RequestParam(required = false) Integer industryId,
             @RequestParam(required = false) String companyName) {
         return ResponseEntity.ok(companyServiceImpl.findCompanyByIndustryAndCompanyName(industryId, companyName));
+    }
+
+    @PostMapping("/createCard")
+    public ResponseEntity<SuccessResponse> createCardPaymentForCompany(@RequestBody CardRequest cardRequest) {
+        companyServiceImpl.createCardPaymentForCompany(cardRequest);
+        return ResponseEntity.ok(new SuccessResponse("Card payment created successfully"));
     }
 }
