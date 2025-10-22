@@ -128,4 +128,13 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<ApplicationStatusResponse> getApplicationOfJobByJobSeeker(Integer jobSeekerId) {
+        List<Application> applications = applicationRepository.findByJobSeekerProfileProfileId(jobSeekerId);
+        if(applications.isEmpty()){
+            throw new BadRequestException("No applications found for the given job seeker ID");
+        }
+        return getApplicationStatusResponses(applications);
+    }
+
 }

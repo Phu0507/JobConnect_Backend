@@ -34,4 +34,10 @@ public class ApplicationController {
         List<ApplicationOfJobResponse> response = applicationServiceImpl.getApplicationOfJob(jobId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/jobSeeker/{jobSeekerId}")
+    public ResponseEntity<List<ApplicationStatusResponse>> getApplicationOfJobByJobSeeker(@PathVariable Integer jobSeekerId) {
+        List<ApplicationStatusResponse> response = applicationServiceImpl.getApplicationOfJobByJobSeeker(jobSeekerId);
+        return ResponseEntity.ok(response);
+    }
 }
