@@ -31,4 +31,13 @@ public class CompanyIndustryController {
         companyIndustryServiceImpl.deleteCompanyIndustry(companyIndustryId);
         return ResponseEntity.ok(new SuccessResponse("Company industry deleted successfully"));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<SuccessResponse> updateCompanyIndustry(
+            @RequestParam Integer companyIndustryId,
+            @RequestParam String companyIndustryName
+    ) {
+        companyIndustryServiceImpl.updateCompanyIndustry(companyIndustryId, companyIndustryName);
+        return ResponseEntity.ok(new SuccessResponse("Company industry updated successfully"));
+    }
 }

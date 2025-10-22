@@ -44,4 +44,12 @@ public class CompanyIndustryServiceImpl implements ICompanyIndustryService {
 
         industryRepository.deleteById(industryId);
     }
+
+    @Override
+    public void updateCompanyIndustry(Integer industryId, String industryName) {
+        Industry industry = industryRepository.findById(industryId).orElseThrow(
+                () -> new BadRequestException("Industry not found"));
+        industry.setName(industryName);
+        industryRepository.save(industry);
+    }
 }
