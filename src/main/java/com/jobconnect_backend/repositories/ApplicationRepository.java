@@ -9,5 +9,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application, Integer> {
-
+    List<Application> findByJobJobIdAndJobSeekerProfileProfileId(Integer jobId, Integer profileId);
 }
