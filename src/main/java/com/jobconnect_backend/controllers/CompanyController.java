@@ -5,6 +5,7 @@ import com.jobconnect_backend.services.ICompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,10 @@ public class CompanyController {
     @GetMapping("/all")
     public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
         return ResponseEntity.ok(companyServiceImpl.getAllCompanies());
+    }
+
+    @GetMapping("/{companyId}")
+    public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable Integer companyId) {
+        return ResponseEntity.ok(companyServiceImpl.getCompanyById(companyId));
     }
 }

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ICompanyService {
     List<CompanyDTO> getAllCompanies();
+    CompanyDTO getCompanyById(Integer companyId);
 }
