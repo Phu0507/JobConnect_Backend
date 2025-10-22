@@ -2,6 +2,7 @@ package com.jobconnect_backend.services.impl;
 
 import com.jobconnect_backend.dto.response.IndustryReponse;
 import com.jobconnect_backend.entities.Industry;
+import com.jobconnect_backend.exception.BadRequestException;
 import com.jobconnect_backend.repositories.IndustryRepository;
 import com.jobconnect_backend.services.ICompanyIndustryService;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +25,17 @@ public class CompanyIndustryServiceImpl implements ICompanyIndustryService {
                         .name(industry.getName())
                         .build())
                 .toList();
+    }
+
+    @Override
+    public void addCompanyIndustry(String industryName) {
+        if(industryRepository.existsByName(industryName)){
+            throw new BadRequestException("Industry already exists");
+        }
+
+        Industry industry = Industry.builder()
+                .name(industryName)
+                .build();
+        industryRepository.save(industry);
     }
 }

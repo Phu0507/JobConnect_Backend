@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ICompanyIndustryService {
     List<IndustryReponse> getAllCompanyIndustries();
+    void addCompanyIndustry(String industryName);
 }
