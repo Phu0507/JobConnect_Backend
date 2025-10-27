@@ -1,9 +1,6 @@
 package com.jobconnect_backend.controllers;
 
-import com.jobconnect_backend.dto.dto.ChartDataDTO;
-import com.jobconnect_backend.dto.dto.CompanyJobStatsDTO;
-import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
-import com.jobconnect_backend.dto.dto.RegionChartDataDTO;
+import com.jobconnect_backend.dto.dto.*;
 import com.jobconnect_backend.repositories.ApplicationRepository;
 import com.jobconnect_backend.repositories.JobRepository;
 import com.jobconnect_backend.repositories.UserRepository;
@@ -51,5 +48,20 @@ public class AdminController {
             @RequestParam String type,
             @RequestParam(required = false) Integer month) {
         return ResponseEntity.ok(applicationServiceImpl.getCompanyJobStats(type, month));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<DashboardStatsDTO> getDashboardStats() {
+        DashboardStatsDTO stats = DashboardStatsDTO.builder()
+                .totalApplications(applicationRepository.count())
+                .openJobs(
+                        jobRepository.findAll().stream()
+                                .filter(job -> job.getIsActive() && !job.getIsDeleted() && job.getIsApproved())
+                                .count()
+                )
+                .activeUsers(userRepository.countByIsVerifiedIsTrue())
+                .pendingApprovals(jobRepository.countByIsApprovedIsFalse())
+                .build();
+        return ResponseEntity.ok(stats);
     }
 }
