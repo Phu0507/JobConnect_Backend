@@ -60,4 +60,15 @@ public class ResumeServiceImpl implements IResumeService {
 
         resumeRepository.save(resume);
     }
+
+    @Override
+    public void deleteResume(Integer resumeId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new BadRequestException("Resume not found"));
+        if (resume.isDeleted()) {
+            throw new BadRequestException("Resume has been deleted");
+        }
+        resume.setDeleted(true);
+        resumeRepository.save(resume);
+    }
 }
