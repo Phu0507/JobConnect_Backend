@@ -188,6 +188,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_NOTIFICATION  + application.getJobSeekerProfile().getUser().getUserId(), notification);
     }
 
+    // Lấy 5 apply gần nhất
     @Override
     public List<RecentApplicationDTO> getRecentApplications() {
         List<Application> applications = applicationRepository.findTop5ByOrderByAppliedAtDesc();
@@ -204,6 +205,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         return dtos;
     }
 
+    //Lấy các apply nổi bật
     @Override
     public ChartDataDTO getApplicationTrends(String type, Integer month) {
         ChartDataDTO dto = new ChartDataDTO();
@@ -244,6 +246,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         return dto;
     }
 
+    //Thống kê số lượng apply của từng khu vực
     @Override
     public RegionChartDataDTO getActiveRegions(String type, Integer month) {
         RegionChartDataDTO dto = new RegionChartDataDTO();
@@ -271,6 +274,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         return dto;
     }
 
+    //Thống kê số job của từng công ty
     @Override
     public CompanyJobStatsDTO getCompanyJobStats(String type, Integer month) {
         CompanyJobStatsDTO dto = new CompanyJobStatsDTO();
