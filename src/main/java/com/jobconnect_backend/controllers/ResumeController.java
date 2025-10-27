@@ -24,5 +24,9 @@ public class ResumeController {
         return ResponseEntity.ok(new SuccessResponse("Create resume successfully"));
     }
 
-    
+    @DeleteMapping("delete/{resumeId}")
+    public ResponseEntity<SuccessResponse> deleteResume(@PathVariable Integer resumeId) {
+        resumeServiceImpl.deleteResume(resumeId);
+        return ResponseEntity.ok(new SuccessResponse("Delete resume successfully"));
+    }
 }
