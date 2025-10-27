@@ -5,6 +5,7 @@ import com.jobconnect_backend.converters.JobSeekerProfileConverter;
 import com.jobconnect_backend.converters.ResumeConverter;
 import com.jobconnect_backend.defaults.DefaultValue;
 import com.jobconnect_backend.dto.dto.ApplicationStatusDTO;
+import com.jobconnect_backend.dto.dto.ChartDataDTO;
 import com.jobconnect_backend.dto.dto.NotificationDTO;
 import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
@@ -21,6 +22,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -201,6 +205,46 @@ public class ApplicationServiceImpl implements IApplicationService {
             return dto;
         }).collect(Collectors.toList());
         return dtos;
+    }
+
+    @Override
+    public ChartDataDTO getApplicationTrends(String type, Integer month) {
+        ChartDataDTO dto = new ChartDataDTO();
+        LocalDateTime now = LocalDateTime.now();
+        int currentYear = now.getYear();
+
+        if ("range".equals(type)) {
+            List<String> labels = new ArrayList<>();
+            List<Long> counts = new ArrayList<>();
+            for (int m = 1; m <= now.getMonthValue(); m++) {
+                LocalDateTime start = LocalDateTime.of(currentYear, m, 1, 0, 0);
+                LocalDateTime end = start.plusMonths(1);
+                long count = applicationRepository.countByAppliedAtBetween(start, end);
+                labels.add(Month.of(m).name().substring(0, 3));
+                counts.add(count);
+            }
+            dto.setLabels(labels);
+            dto.setCounts(counts);
+
+        } else if ("month".equals(type) && month != null) {
+            YearMonth yearMonth = YearMonth.of(currentYear, month);
+            List<String> labels = new ArrayList<>();
+            List<Long> counts = new ArrayList<>();
+            for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
+                LocalDateTime start = LocalDateTime.of(currentYear, month, day, 0, 0);
+                LocalDateTime end = start.plusDays(1);
+                long count = applicationRepository.countByAppliedAtBetween(start, end);
+                labels.add(String.format("%02d", day));
+                counts.add(count);
+            }
+            dto.setLabels(labels);
+            dto.setCounts(counts);
+
+        } else {
+            throw new BadRequestException("Invalid type or month");
+        }
+
+        return dto;
     }
 
 }

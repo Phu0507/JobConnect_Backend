@@ -13,4 +13,5 @@ public interface ApplicationRepository extends JpaRepository<Application, Intege
     List<Application> findByJobJobId(Integer jobId);
     List<Application> findByJobSeekerProfileProfileId(Integer profileId);
     List<Application> findTop5ByOrderByAppliedAtDesc();
+    long countByAppliedAtBetween(LocalDateTime start, LocalDateTime end);
 }
