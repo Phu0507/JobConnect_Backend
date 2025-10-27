@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface ICompanyReviewService {
     List<CompanyReviewResponse> getCompanyReviews(Integer companyId);
+    void addCompanyReview(AddCompanyReviewRequest addCompanyReviewRequest);
 }
