@@ -1,6 +1,7 @@
 package com.jobconnect_backend.services.impl;
 
 import com.jobconnect_backend.dto.request.AddCompanyReviewRequest;
+import com.jobconnect_backend.dto.request.UpdateCompanyReviewRequest;
 import com.jobconnect_backend.dto.response.CompanyReviewResponse;
 import com.jobconnect_backend.entities.Company;
 import com.jobconnect_backend.entities.CompanyReview;
@@ -86,6 +87,19 @@ public class CompanyReviewServiceImpl implements ICompanyReviewService {
                 .reviewDate(LocalDateTime.now())
                 .isApproved(false)
                 .build();
+
+        companyReviewRepository.save(review);
+    }
+
+    @Override
+    public void updateCompanyReview(UpdateCompanyReviewRequest updateCompanyReviewRequest) {
+        CompanyReview review = companyReviewRepository.findById(updateCompanyReviewRequest.getReviewId())
+                .orElseThrow(() -> new BadRequestException("Review not found"));
+
+        review.setRating(updateCompanyReviewRequest.getRating());
+        review.setReviewText(updateCompanyReviewRequest.getReviewText());
+        review.setReviewDate(LocalDateTime.now());
+        review.setIsApproved(false);
 
         companyReviewRepository.save(review);
     }
