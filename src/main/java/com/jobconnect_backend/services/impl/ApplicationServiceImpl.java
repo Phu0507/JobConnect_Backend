@@ -4,10 +4,7 @@ import com.jobconnect_backend.converters.JobConverter;
 import com.jobconnect_backend.converters.JobSeekerProfileConverter;
 import com.jobconnect_backend.converters.ResumeConverter;
 import com.jobconnect_backend.defaults.DefaultValue;
-import com.jobconnect_backend.dto.dto.ApplicationStatusDTO;
-import com.jobconnect_backend.dto.dto.ChartDataDTO;
-import com.jobconnect_backend.dto.dto.NotificationDTO;
-import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
+import com.jobconnect_backend.dto.dto.*;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
 import com.jobconnect_backend.dto.request.CreateNotiRequest;
 import com.jobconnect_backend.dto.response.ApplicationOfJobResponse;
@@ -243,6 +240,33 @@ public class ApplicationServiceImpl implements IApplicationService {
         } else {
             throw new BadRequestException("Invalid type or month");
         }
+
+        return dto;
+    }
+
+    @Override
+    public RegionChartDataDTO getActiveRegions(String type, Integer month) {
+        RegionChartDataDTO dto = new RegionChartDataDTO();
+        LocalDateTime now = LocalDateTime.now();
+        int currentYear = now.getYear();
+
+        List<Object[]> results;
+        if ("range".equals(type)) {
+            LocalDateTime start = LocalDateTime.of(currentYear, 1, 1, 0, 0);
+            LocalDateTime end = LocalDateTime.of(currentYear, now.getMonthValue() + 1, 1, 0, 0);
+            results = applicationRepository.countByLocationAndCreatedAtBetween(start, end);
+        } else if ("month".equals(type) && month != null) {
+            LocalDateTime start = LocalDateTime.of(currentYear, month, 1, 0, 0);
+            LocalDateTime end = start.plusMonths(1);
+            results = applicationRepository.countByLocationAndCreatedAtBetween(start, end);
+        } else {
+            throw new BadRequestException("Invalid type or month");
+        }
+
+        List<String> labels = results.stream().map(row -> (String) row[0]).collect(Collectors.toList());
+        List<Long> counts = results.stream().map(row -> ((Number) row[1]).longValue()).collect(Collectors.toList());
+        dto.setLabels(labels);
+        dto.setCounts(counts);
 
         return dto;
     }

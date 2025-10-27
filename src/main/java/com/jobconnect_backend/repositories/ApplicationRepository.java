@@ -14,4 +14,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Intege
     List<Application> findByJobSeekerProfileProfileId(Integer profileId);
     List<Application> findTop5ByOrderByAppliedAtDesc();
     long countByAppliedAtBetween(LocalDateTime start, LocalDateTime end);
+    @Query("SELECT j.location, COUNT(a) FROM Application a JOIN a.job j WHERE a.appliedAt BETWEEN :start AND :end GROUP BY j.location")
+    List<Object[]> countByLocationAndCreatedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
