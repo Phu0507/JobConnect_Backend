@@ -111,4 +111,14 @@ public class CompanyReviewServiceImpl implements ICompanyReviewService {
         companyReviewRepository.delete(review);
     }
 
+    @Override
+    public void approveCompanyReview(Integer reviewId) {
+        CompanyReview review = companyReviewRepository.findById(reviewId)
+                .orElseThrow(() -> new BadRequestException("Review not found"));
+
+        review.setIsApproved(true);
+        companyReviewRepository.save(review);
+    }
+
+
 }

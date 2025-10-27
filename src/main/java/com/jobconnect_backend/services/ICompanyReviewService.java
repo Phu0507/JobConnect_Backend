@@ -11,4 +11,6 @@ public interface ICompanyReviewService {
     void addCompanyReview(AddCompanyReviewRequest addCompanyReviewRequest);
     void updateCompanyReview(UpdateCompanyReviewRequest updateCompanyReviewRequest);
     void deleteCompanyReview(Integer reviewId);
+    void approveCompanyReview(Integer reviewId);
+
 }

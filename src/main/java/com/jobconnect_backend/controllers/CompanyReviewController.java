@@ -40,4 +40,11 @@ public class CompanyReviewController {
         companyReviewServiceImpl.deleteCompanyReview(reviewId);
         return ResponseEntity.ok(new SuccessResponse("Company review deleted successfully"));
     }
+
+    @PutMapping("/approve/{reviewId}")
+    public ResponseEntity<SuccessResponse> approveCompanyReview(@PathVariable Integer reviewId) {
+        companyReviewServiceImpl.approveCompanyReview(reviewId);
+        return ResponseEntity.ok(new SuccessResponse("Company review approved successfully"));
+    }
+
 }
