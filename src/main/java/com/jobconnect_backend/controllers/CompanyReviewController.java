@@ -34,4 +34,10 @@ public class CompanyReviewController {
         companyReviewServiceImpl.updateCompanyReview(updateCompanyReviewRequest);
         return ResponseEntity.ok(new SuccessResponse("Company review updated successfully"));
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<SuccessResponse> deleteCompanyReview(@RequestParam Integer reviewId) {
+        companyReviewServiceImpl.deleteCompanyReview(reviewId);
+        return ResponseEntity.ok(new SuccessResponse("Company review deleted successfully"));
+    }
 }

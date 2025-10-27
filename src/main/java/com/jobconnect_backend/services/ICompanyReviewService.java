@@ -10,4 +10,5 @@ public interface ICompanyReviewService {
     List<CompanyReviewResponse> getCompanyReviews(Integer companyId);
     void addCompanyReview(AddCompanyReviewRequest addCompanyReviewRequest);
     void updateCompanyReview(UpdateCompanyReviewRequest updateCompanyReviewRequest);
+    void deleteCompanyReview(Integer reviewId);
 }
