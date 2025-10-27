@@ -6,6 +6,7 @@ import com.jobconnect_backend.converters.ResumeConverter;
 import com.jobconnect_backend.defaults.DefaultValue;
 import com.jobconnect_backend.dto.dto.ApplicationStatusDTO;
 import com.jobconnect_backend.dto.dto.NotificationDTO;
+import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
 import com.jobconnect_backend.dto.request.CreateNotiRequest;
 import com.jobconnect_backend.dto.response.ApplicationOfJobResponse;
@@ -184,6 +185,22 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         NotificationDTO notification = notificationServiceImpl.createNoti(notificationRequest);
         messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_NOTIFICATION  + application.getJobSeekerProfile().getUser().getUserId(), notification);
+    }
+
+    @Override
+    public List<RecentApplicationDTO> getRecentApplications() {
+        List<Application> applications = applicationRepository.findTop5ByOrderByAppliedAtDesc();
+        List<RecentApplicationDTO> dtos = applications.stream().map(app -> {
+            RecentApplicationDTO dto = RecentApplicationDTO.builder()
+                    .id(app.getApplicationId())
+                    .applicant(app.getJobSeekerProfile().getFirstName() + " " + app.getJobSeekerProfile().getLastName())
+                    .jobTitle(app.getJob().getTitle())
+                    .status(app.getApplicationStatus().toString())
+                    .date(app.getAppliedAt().toString())
+                    .build();
+            return dto;
+        }).collect(Collectors.toList());
+        return dtos;
     }
 
 }
