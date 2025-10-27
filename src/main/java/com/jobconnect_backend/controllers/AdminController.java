@@ -1,6 +1,7 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.dto.dto.ChartDataDTO;
+import com.jobconnect_backend.dto.dto.CompanyJobStatsDTO;
 import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
 import com.jobconnect_backend.dto.dto.RegionChartDataDTO;
 import com.jobconnect_backend.repositories.ApplicationRepository;
@@ -43,5 +44,12 @@ public class AdminController {
             @RequestParam String type,
             @RequestParam(required = false) Integer month) {
         return ResponseEntity.ok(applicationServiceImpl.getActiveRegions(type, month));
+    }
+
+    @GetMapping("/companies/job-stats")
+    public ResponseEntity<CompanyJobStatsDTO> getCompanyJobStats(
+            @RequestParam String type,
+            @RequestParam(required = false) Integer month) {
+        return ResponseEntity.ok(applicationServiceImpl.getCompanyJobStats(type, month));
     }
 }

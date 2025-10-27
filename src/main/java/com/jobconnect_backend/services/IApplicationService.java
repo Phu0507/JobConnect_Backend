@@ -1,6 +1,7 @@
 package com.jobconnect_backend.services;
 
 import com.jobconnect_backend.dto.dto.ChartDataDTO;
+import com.jobconnect_backend.dto.dto.CompanyJobStatsDTO;
 import com.jobconnect_backend.dto.dto.RecentApplicationDTO;
 import com.jobconnect_backend.dto.dto.RegionChartDataDTO;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
@@ -19,4 +20,5 @@ public interface IApplicationService {
     List<RecentApplicationDTO> getRecentApplications();
     ChartDataDTO getApplicationTrends(String type, Integer month);
     RegionChartDataDTO getActiveRegions(String type, Integer month);
+    CompanyJobStatsDTO getCompanyJobStats(String type, Integer month);
 }
