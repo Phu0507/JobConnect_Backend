@@ -3,8 +3,11 @@ package com.jobconnect_backend.services.impl;
 import com.jobconnect_backend.converters.JobConverter;
 import com.jobconnect_backend.converters.JobSeekerProfileConverter;
 import com.jobconnect_backend.converters.ResumeConverter;
+import com.jobconnect_backend.defaults.DefaultValue;
 import com.jobconnect_backend.dto.dto.ApplicationStatusDTO;
+import com.jobconnect_backend.dto.dto.NotificationDTO;
 import com.jobconnect_backend.dto.request.ApplicationRequest;
+import com.jobconnect_backend.dto.request.CreateNotiRequest;
 import com.jobconnect_backend.dto.response.ApplicationOfJobResponse;
 import com.jobconnect_backend.dto.response.ApplicationStatusResponse;
 import com.jobconnect_backend.entities.*;
@@ -28,7 +31,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationStatusHistoryRepository historyRepository;
     private final JobSeekerProfileRepository jobSeekerProfileRepository;
     private final ResumeRepository resumeRepository;
-    //    private final NotificationServiceImplService notificationServiceImpl;
+    private final NotificationServiceImplService notificationServiceImpl;
     private final JobSeekerProfileConverter jobSeekerProfileConverter;
     private final ResumeConverter resumeConverter;
     private final JobConverter jobConverter;
@@ -160,6 +163,27 @@ public class ApplicationServiceImpl implements IApplicationService {
                                 .collect(Collectors.toList())
                 )
                 .build();
+    }
+
+    @Override
+    public void updateApplicationStatus(Integer applicationId, String status) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new BadRequestException("Application not found"));
+
+        ApplicationStatus newStatus = ApplicationStatus.valueOf(status);
+        application.setApplicationStatus(newStatus);
+        applicationRepository.save(application);
+
+        saveApplicationStatusHistory(application, newStatus);
+
+        CreateNotiRequest notificationRequest = CreateNotiRequest.builder()
+                .applicationId(application.getApplicationId())
+                .userId(application.getJobSeekerProfile().getUser().getUserId())
+                .content(newStatus.toString())
+                .build();
+
+        NotificationDTO notification = notificationServiceImpl.createNoti(notificationRequest);
+        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_NOTIFICATION  + application.getJobSeekerProfile().getUser().getUserId(), notification);
     }
 
 }
