@@ -12,5 +12,4 @@ public interface ICompanyReviewService {
     void updateCompanyReview(UpdateCompanyReviewRequest updateCompanyReviewRequest);
     void deleteCompanyReview(Integer reviewId);
     void approveCompanyReview(Integer reviewId);
-
 }

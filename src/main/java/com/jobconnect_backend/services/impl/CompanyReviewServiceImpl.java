@@ -120,5 +120,4 @@ public class CompanyReviewServiceImpl implements ICompanyReviewService {
         companyReviewRepository.save(review);
     }
 
-
 }
