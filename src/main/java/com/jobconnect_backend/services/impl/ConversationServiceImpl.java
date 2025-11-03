@@ -2,10 +2,12 @@ package com.jobconnect_backend.services.impl;
 
 import com.jobconnect_backend.converters.MessageConverter;
 import com.jobconnect_backend.defaults.DefaultValue;
+import com.jobconnect_backend.dto.request.SendFileMessageRequest;
 import com.jobconnect_backend.dto.request.SendTextMessageRequest;
 import com.jobconnect_backend.dto.response.ConversationMeta;
 import com.jobconnect_backend.dto.response.ConversationResponse;
 import com.jobconnect_backend.dto.response.MessageResponse;
+import com.jobconnect_backend.entities.Attachment;
 import com.jobconnect_backend.entities.Conversation;
 import com.jobconnect_backend.entities.Message;
 import com.jobconnect_backend.entities.User;
@@ -173,10 +175,12 @@ public class ConversationServiceImpl implements IConversationService {
 
         messageRepository.save(message);
 
+        //xác định người nhận
         Integer recipientId = conversation.getJobSeeker().getUserId().equals(sendTextMessageRequest.getSenderId())
                 ? conversation.getCompany().getUserId()
                 : conversation.getJobSeeker().getUserId();
 
+        //cập nhật số tin nhắn chưa đọc
         if (conversation.getJobSeeker().getUserId().equals(sendTextMessageRequest.getSenderId())) {
             conversation.setUnreadCountCompany(conversation.getUnreadCountCompany() + 1);
         } else {
@@ -189,8 +193,52 @@ public class ConversationServiceImpl implements IConversationService {
 
         Long totalUnread = conversationRepository.countUnreadConversations(recipientId);
         messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_COUNT_UNREAD + recipientId, totalUnread);
-//        messagingTemplate.convertAndSend(JobFindConstant.WS_TOPIC_DATA_CONVERSATION + recipientId, meta);
-//        messagingTemplate.convertAndSend(JobFindConstant.WS_TOPIC_DATA_CONVERSATION + conversation.getId(), meta);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + recipientId, meta);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + conversation.getId(), meta);
         return messageConverter.convertToMessageResponse(message);
+    }
+
+    @Override
+    public MessageResponse sendFileMessage(SendFileMessageRequest sendFileMessageRequest) {
+        Conversation conversation = conversationRepository.findById(sendFileMessageRequest.getConversationId()).orElseThrow();
+        Message message = Message.builder()
+                .conversation(conversation)
+                .sender(userRepository.findById(sendFileMessageRequest.getSenderId()).orElseThrow(() -> new BadRequestException("User not found")))
+                .content(sendFileMessageRequest.getContent())
+                .sentAt(LocalDateTime.now())
+                .isRead(false)
+                .messageType(sendFileMessageRequest.getFileType().startsWith("image") ? MessageType.IMAGE : MessageType.FILE)
+                .build();
+
+        Message savedMessage = messageRepository.save(message);
+
+        conversation.setLastMessageAt(LocalDateTime.now());
+        conversationRepository.save(conversation);
+
+        Attachment attachment = Attachment.builder()
+                .fileName(sendFileMessageRequest.getFileName())
+                .fileType(sendFileMessageRequest.getFileType())
+                .filePath(sendFileMessageRequest.getFilePath())
+                .message(message)
+                .uploadTime(LocalDateTime.now())
+                .build();
+
+        Integer recipientId = conversation.getJobSeeker().getUserId().equals(sendFileMessageRequest.getSenderId())
+                ? conversation.getCompany().getUserId()
+                : conversation.getJobSeeker().getUserId();
+        if (conversation.getJobSeeker().getUserId().equals(sendFileMessageRequest.getSenderId())) {
+            conversation.setUnreadCountCompany(conversation.getUnreadCountCompany() + 1);
+        } else {
+            conversation.setUnreadCountJobSeeker(conversation.getUnreadCountJobSeeker() + 1);
+        }
+//        ConversationMeta meta = getConversationMetaById(conversation.getId(), sendFileMessageRequest.getSenderId());
+
+        attachmentRepository.save(attachment);
+        Long totalUnread = conversationRepository.countUnreadConversations(recipientId);
+        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_COUNT_UNREAD + recipientId, totalUnread);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + recipientId, meta);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + conversation.getId(), meta);
+
+        return messageConverter.convertToMessageResponse(savedMessage);
     }
 }

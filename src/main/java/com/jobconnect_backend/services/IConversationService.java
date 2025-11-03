@@ -1,5 +1,6 @@
 package com.jobconnect_backend.services;
 
+import com.jobconnect_backend.dto.request.SendFileMessageRequest;
 import com.jobconnect_backend.dto.request.SendTextMessageRequest;
 import com.jobconnect_backend.dto.response.ConversationMeta;
 import com.jobconnect_backend.dto.response.ConversationResponse;
@@ -13,4 +14,5 @@ public interface IConversationService {
     ConversationResponse getConversationById(Integer conversationId, Integer userId);
     ConversationMeta getConversationMetaById(Integer conversationId, Integer userId);
     MessageResponse sendTextMessage(SendTextMessageRequest sendTextMessageRequest);
+    MessageResponse sendFileMessage(SendFileMessageRequest sendFileMessageRequest);
 }

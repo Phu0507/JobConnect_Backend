@@ -1,6 +1,7 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.defaults.DefaultValue;
+import com.jobconnect_backend.dto.request.SendFileMessageRequest;
 import com.jobconnect_backend.dto.request.SendTextMessageRequest;
 import com.jobconnect_backend.dto.response.ConversationResponse;
 import com.jobconnect_backend.dto.response.MessageResponse;
@@ -48,6 +49,12 @@ public class ConversationController {
     @MessageMapping("/message/text")
     public void sendTextMessage(@RequestBody SendTextMessageRequest request) {
         MessageResponse message = conversationServiceImpl.sendTextMessage(request);
+        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_CONVERSATION + request.getConversationId(), message);
+    }
+
+    @MessageMapping("/message/file")
+    public void sendFileMessage(@RequestBody SendFileMessageRequest request) {
+        MessageResponse message = conversationServiceImpl.sendFileMessage(request);
         messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_CONVERSATION + request.getConversationId(), message);
     }
 }
