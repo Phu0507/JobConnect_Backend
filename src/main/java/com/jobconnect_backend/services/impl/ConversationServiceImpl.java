@@ -249,4 +249,40 @@ public class ConversationServiceImpl implements IConversationService {
                 .map(messageConverter::convertToMessageResponse)
                 .toList();
     }
+
+    @Override
+    public void markMessagesAsRead(Integer conversationId, Integer userId) {
+        Conversation conversation = conversationRepository.findById(conversationId).orElseThrow();
+        List<Message> messages = messageRepository.findByConversationIdOrderBySentAtAsc(conversationId);
+        for (Message message : messages) {
+            if (!message.getIsRead() && !message.getSender().getUserId().equals(userId)) {
+                message.setIsRead(true);
+                messageRepository.save(message);
+            }
+        }
+
+        Integer otherUserId = conversation.getJobSeeker().getUserId().equals(userId)
+                ? conversation.getCompany().getUserId()
+                : conversation.getJobSeeker().getUserId();
+
+        if (conversation.getJobSeeker().getUserId().equals(userId)) {
+            conversation.setUnreadCountJobSeeker(0);
+        } else {
+            conversation.setUnreadCountCompany(0);
+        }
+//        ConversationMeta meta = getConversationMetaById(conversation.getId(), userId);
+//        ConversationMeta otherMeta = getConversationMetaById(conversation.getId(), otherUserId);
+
+        Long totalUnread = conversationRepository.countUnreadConversations(userId);
+        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_COUNT_UNREAD + userId, totalUnread);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + userId, meta);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + otherMeta, meta);
+//        messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_DATA_CONVERSATION + conversationId, meta);
+        conversationRepository.save(conversation);
+    }
+
+    @Override
+    public Long countUnreadConversations(Integer userId) {
+        return conversationRepository.countUnreadConversations(userId);
+    }
 }

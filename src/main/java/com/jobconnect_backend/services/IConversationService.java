@@ -16,4 +16,6 @@ public interface IConversationService {
     MessageResponse sendTextMessage(SendTextMessageRequest sendTextMessageRequest);
     MessageResponse sendFileMessage(SendFileMessageRequest sendFileMessageRequest);
     List<MessageResponse> getMessagesByConversationId(Integer conversationId);
+    void markMessagesAsRead(Integer conversationId, Integer userId);
+    Long countUnreadConversations(Integer userId);
 }

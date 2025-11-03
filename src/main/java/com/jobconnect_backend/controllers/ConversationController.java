@@ -1,6 +1,7 @@
 package com.jobconnect_backend.controllers;
 
 import com.jobconnect_backend.defaults.DefaultValue;
+import com.jobconnect_backend.dto.request.MarkMessagesReadRequest;
 import com.jobconnect_backend.dto.request.SendFileMessageRequest;
 import com.jobconnect_backend.dto.request.SendTextMessageRequest;
 import com.jobconnect_backend.dto.response.ConversationResponse;
@@ -62,5 +63,16 @@ public class ConversationController {
     public ResponseEntity<List<MessageResponse>> getMessagesByConversationId(@PathVariable Integer conversationId) {
         List<MessageResponse> messages = conversationServiceImpl.getMessagesByConversationId(conversationId);
         return ResponseEntity.ok(messages);
+    }
+
+    @MessageMapping("/messages/read")
+    public void markMessagesAsRead(@RequestBody MarkMessagesReadRequest request) {
+        conversationServiceImpl.markMessagesAsRead(request.getConversationId(), request.getUserId());
+    }
+
+    @GetMapping("/conversations/unread/{userId}")
+    public ResponseEntity<Long> countUnreadConversations(@PathVariable Integer userId) {
+        Long unreadCount = conversationServiceImpl.countUnreadConversations(userId);
+        return ResponseEntity.ok(unreadCount);
     }
 }
