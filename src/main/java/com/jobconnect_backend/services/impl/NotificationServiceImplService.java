@@ -49,4 +49,9 @@ public class NotificationServiceImplService implements INotificationService {
                 .map(notificationConverter::convertToNotificationDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Long countUnreadNotifications(Integer userId) {
+        return notificationRepository.countByUserUserIdAndIsReadFalse(userId);
+    }
 }
