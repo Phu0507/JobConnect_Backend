@@ -9,4 +9,6 @@ public interface INotificationService {
     NotificationDTO createNoti(CreateNotiRequest request);
     List<NotificationDTO> getNotificationsByUserId(Integer userId);
     Long countUnreadNotifications(Integer userId);
+    void markAsRead(Integer notificationId);
+    void markAllAsRead(Integer userId);
 }

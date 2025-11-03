@@ -54,4 +54,19 @@ public class NotificationServiceImplService implements INotificationService {
     public Long countUnreadNotifications(Integer userId) {
         return notificationRepository.countByUserUserIdAndIsReadFalse(userId);
     }
+
+    @Override
+    public void markAsRead(Integer notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new BadRequestException("Notification not found"));
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void markAllAsRead(Integer userId) {
+        List<Notification> notifications = notificationRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
+        notifications.forEach(notification -> notification.setIsRead(true));
+        notificationRepository.saveAll(notifications);
+    }
 }
