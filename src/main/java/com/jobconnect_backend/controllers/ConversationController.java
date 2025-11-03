@@ -32,4 +32,13 @@ public class ConversationController {
         List<ConversationResponse> conversations = conversationServiceImpl.getUserConversations(userId);
         return ResponseEntity.ok(conversations);
     }
+
+    @GetMapping("/conversation/{conversationId}")
+    public ResponseEntity<ConversationResponse> getConversation(
+            @PathVariable Integer conversationId,
+            @RequestParam Integer userId) {
+
+        ConversationResponse conversation = conversationServiceImpl.getConversationById(conversationId, userId);
+        return ResponseEntity.ok(conversation);
+    }
 }

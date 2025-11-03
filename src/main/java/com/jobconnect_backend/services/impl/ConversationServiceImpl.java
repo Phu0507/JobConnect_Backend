@@ -93,4 +93,37 @@ public class ConversationServiceImpl implements IConversationService {
                     .build();
         }).toList();
     }
+
+    //để lấy thông tin chi tiết của một cuộc trò chuyện
+    @Override
+    public ConversationResponse getConversationById(Integer conversationId, Integer userId) {
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new BadRequestException("Conversation not found"));
+
+        User jobSeeker = conversation.getJobSeeker();
+        User company = conversation.getCompany();
+
+        boolean isCurrentUserJobSeeker = jobSeeker.getUserId().equals(userId);
+        User otherUser = isCurrentUserJobSeeker ? company : jobSeeker;
+        Message lastMessage = messageRepository.findTopByConversationIdOrderBySentAtDesc(conversation.getId());
+        int unreadCount = conversation.getJobSeeker().getUserId().equals(userId)
+                ? conversation.getUnreadCountJobSeeker()
+                : conversation.getUnreadCountCompany();
+
+        return ConversationResponse.builder()
+                .conversationId(conversation.getId())
+                .createdAt(conversation.getCreateAt())
+                .lastMessageAt(conversation.getLastMessageAt())
+                .lastMessage(lastMessage != null ? lastMessage.getContent() : "")
+                .senderId(otherUser.getUserId())
+                .roleId(otherUser.getRole() == Role.JOBSEEKER ? otherUser.getJobSeekerProfile().getProfileId() : otherUser.getCompany().getCompanyId())
+                .senderName(otherUser.getCompany() != null
+                        ? otherUser.getCompany().getCompanyName()
+                        : otherUser.getJobSeekerProfile().getFirstName() + " " + otherUser.getJobSeekerProfile().getLastName())
+                .senderAvatar(otherUser.getCompany() != null
+                        ? otherUser.getCompany().getLogoPath()
+                        : otherUser.getJobSeekerProfile().getAvatar())
+                .unreadCount(unreadCount)
+                .build();
+    }
 }
