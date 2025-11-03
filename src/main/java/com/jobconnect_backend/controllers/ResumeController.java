@@ -29,4 +29,13 @@ public class ResumeController {
         resumeServiceImpl.deleteResume(resumeId);
         return ResponseEntity.ok(new SuccessResponse("Delete resume successfully"));
     }
+
+    @PostMapping("/auto-create/{profileId}")
+    public ResponseEntity<SuccessResponse> autoCreate(
+            @PathVariable Integer profileId,
+            @RequestParam String resumeName){
+        resumeServiceImpl.autoCreateResume(profileId, resumeName);
+        return ResponseEntity.ok(new SuccessResponse("Resume auto created successfully"));
+    }
+
 }

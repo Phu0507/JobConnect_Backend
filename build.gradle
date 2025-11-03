@@ -55,6 +55,9 @@ dependencies {
     implementation 'com.stripe:stripe-java:21.0.0'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation("com.algolia:algoliasearch:4.16.0")
+    implementation 'org.thymeleaf:thymeleaf-spring5:3.0.15.RELEASE'
+    implementation 'com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10'
+    implementation 'com.openhtmltopdf:openhtmltopdf-slf4j:1.0.10'
 }
 
 tasks.named('test') {

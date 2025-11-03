@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #2c3e50; margin-bottom: 5px; }
+        h2 { font-size: 18px; color: #34495e; margin-top: 25px; }
+        .info { margin-bottom: 15px; }
+        .info div { margin: 3px 0; }
+        .section-item { margin-left: 15px; }
+    </style>
+</head>
+<body>
+<h1>[[${fullName}]]</h1>
+<div style="color: #555;">[[${title}]]</div>
+
+<div class="info">
+    <div><b>Email:</b> [[${email}]]</div>
+    <div><b>Phone:</b> [[${phone}]]</div>
+    <div><b>Address:</b> [[${address}]]</div>
+    <div><b>Birth day:</b> [[${birthDay}]]</div>
+</div>
+
+<h2>Skills</h2>
+<ul>
+    <th:block th:each="skill : ${skills}">
+        <li class="section-item">[[${skill.name}]]</li>
+    </th:block>
+</ul>
+
+<h2>Work Experience</h2>
+<ul>
+    <th:block th:each="exp : ${experiences}">
+        <li class="section-item">
+            <b>[[${exp.position}]]</b> - [[${exp.company}]]
+            <br/> [[${exp.startDate}]] → [[${exp.endDate}]]
+            <br/> [[${exp.description}]]
+        </li>
+    </th:block>
+</ul>
+</body>
+</html>
