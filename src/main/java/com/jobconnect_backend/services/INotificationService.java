@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface INotificationService {
     NotificationDTO createNoti(CreateNotiRequest request);
+    List<NotificationDTO> getNotificationsByUserId(Integer userId);
 }

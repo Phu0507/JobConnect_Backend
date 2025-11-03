@@ -41,4 +41,12 @@ public class NotificationServiceImplService implements INotificationService {
         notificationRepository.save(notification);
         return notificationConverter.convertToNotificationDTO(notification);
     }
+
+    @Override
+    public List<NotificationDTO> getNotificationsByUserId(Integer userId) {
+        List<Notification> notification = notificationRepository.findByUserUserIdOrderByCreatedAtDesc(userId);
+        return notification.stream()
+                .map(notificationConverter::convertToNotificationDTO)
+                .collect(Collectors.toList());
+    }
 }
