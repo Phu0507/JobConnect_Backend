@@ -250,6 +250,7 @@ public class ConversationServiceImpl implements IConversationService {
                 .toList();
     }
 
+    //đánh dấu tin nhắn là đã đọc
     @Override
     public void markMessagesAsRead(Integer conversationId, Integer userId) {
         Conversation conversation = conversationRepository.findById(conversationId).orElseThrow();
@@ -281,8 +282,16 @@ public class ConversationServiceImpl implements IConversationService {
         conversationRepository.save(conversation);
     }
 
+    //đếm cuộc trò chuyện chưa đọc
     @Override
     public Long countUnreadConversations(Integer userId) {
         return conversationRepository.countUnreadConversations(userId);
+    }
+
+//    tìm Conversation theo User và company
+    @Override
+    public Long findConversationIdByUserIdAndEmployerId(Integer userId, Integer employerId) {
+        Long conversationId = conversationRepository.findConversationIdByJobSeekerUserIdAndCompanyUserId(userId, employerId);
+        return conversationId != null ? conversationId : 0L;
     }
 }
