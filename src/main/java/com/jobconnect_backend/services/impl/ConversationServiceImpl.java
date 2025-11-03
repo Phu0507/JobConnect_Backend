@@ -241,4 +241,12 @@ public class ConversationServiceImpl implements IConversationService {
 
         return messageConverter.convertToMessageResponse(savedMessage);
     }
+
+    @Override
+    public List<MessageResponse> getMessagesByConversationId(Integer conversationId) {
+        List<Message> messages = messageRepository.findByConversationIdOrderBySentAtAsc(conversationId);
+        return messages.stream()
+                .map(messageConverter::convertToMessageResponse)
+                .toList();
+    }
 }

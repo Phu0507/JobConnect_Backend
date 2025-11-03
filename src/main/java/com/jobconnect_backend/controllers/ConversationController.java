@@ -57,4 +57,10 @@ public class ConversationController {
         MessageResponse message = conversationServiceImpl.sendFileMessage(request);
         messagingTemplate.convertAndSend(DefaultValue.WS_TOPIC_CONVERSATION + request.getConversationId(), message);
     }
+
+    @GetMapping("/messages/{conversationId}")
+    public ResponseEntity<List<MessageResponse>> getMessagesByConversationId(@PathVariable Integer conversationId) {
+        List<MessageResponse> messages = conversationServiceImpl.getMessagesByConversationId(conversationId);
+        return ResponseEntity.ok(messages);
+    }
 }

@@ -15,4 +15,5 @@ public interface IConversationService {
     ConversationMeta getConversationMetaById(Integer conversationId, Integer userId);
     MessageResponse sendTextMessage(SendTextMessageRequest sendTextMessageRequest);
     MessageResponse sendFileMessage(SendFileMessageRequest sendFileMessageRequest);
+    List<MessageResponse> getMessagesByConversationId(Integer conversationId);
 }
