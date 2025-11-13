@@ -1,0 +1,70 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: 'DejaVuSans', sans-serif;
+            padding: 24px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            object-fit: cover; border: 2px solid #ddd;
+        }
+        h1 { margin: 0; font-size: 26px; }
+        h2 { margin-top: 24px; font-size: 18px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+        .contact div { margin-bottom: 4px; }
+        ul { padding-left: 18px; }
+        .experience-item { margin-bottom: 16px; }
+        .experience-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .experience-header h3 { margin: 0; font-size: 16px; }
+        .experience-header .time { font-size: 12px; color: #666; }
+        .meta { font-size: 12px; color: #555; margin: 4px 0; }
+        .meta .job-type { font-weight: bold; margin-right: 8px; }
+        .meta .category { font-style: italic; }
+        .desc { margin: 4px 0 4px 0; }
+        .exp-skills { font-size: 12px; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    ${AVATAR}
+    <div>
+        <h1>${FIRST_NAME} ${LAST_NAME}</h1>
+        <div><b>${TITLE}</b></div>
+    </div>
+</div>
+
+<div class="contact">
+    <div><b>Địa chỉ:</b> ${ADDRESS}</div>
+    <div><b>Email:</b> ${EMAIL}</div>
+    <div><b>Số điện thoại:</b> ${PHONE}</div>
+    <div><b>Ngày sinh:</b> ${BIRTHDAY}</div>
+</div>
+
+<h2>Tóm tắt bản thân</h2>
+<p>${SUMMARY}</p>
+
+<h2>Mục tiêu nghề nghiệp</h2>
+<p>${CAREER_OBJECTIVE}</p>
+
+<h2>Kỹ năng</h2>
+<ul>
+    ${SKILL_ITEMS}
+</ul>
+
+<h2>Kinh nghiệm làm việc</h2>
+${EXPERIENCE_ITEMS}
+
+<h2>Học vấn</h2>
+${EDUCATION}
+
+<h2>Chứng chỉ</h2>
+${CERTIFICATIONS}
+
+<h2>Dự án cá nhân</h2>
+${PROJECTS}
+</body>
+</html>

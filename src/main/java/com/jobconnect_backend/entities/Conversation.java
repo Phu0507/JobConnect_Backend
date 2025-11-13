@@ -23,7 +23,9 @@ public class Conversation {
     @ManyToOne
     @JoinColumn(name = "employer_user_id")
     private User company;
+    @Builder.Default
     private Integer unreadCountJobSeeker = 0;
+    @Builder.Default
     private Integer unreadCountCompany = 0;
     private LocalDateTime createAt;
     private LocalDateTime lastMessageAt;
