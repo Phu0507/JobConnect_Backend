@@ -15,6 +15,7 @@ import com.jobconnect_backend.services.ICompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -36,8 +37,29 @@ public class CompanyServiceImpl implements ICompanyService {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new BadRequestException("Company not found"));
 
+        User user = company.getUser();
+        // KIỂM TRA VIP HẾT HẠN
+        updateVipStatusIfExpired(user);
         return companyConverter.convertToCompanyDTO(company);
     }
+
+    private void updateVipStatusIfExpired(User user) {
+        LocalDateTime expiry = user.getVipExpiryDate();
+
+        if (expiry != null && expiry.isBefore(LocalDateTime.now())) {
+            // Hết VIP → reset
+            user.setVip(false);
+            user.setVipLevel(null);
+
+            Company company = user.getCompany();
+            if (company != null) {
+                company.setCreateJobCount(10); // hoặc số job free
+            }
+
+            userRepository.save(user);  // rất quan trọng
+        }
+    }
+
 
     @Override
     public List<CompanyDTO> findCompanyByIndustryAndCompanyName(Integer industryId, String companyName) {
