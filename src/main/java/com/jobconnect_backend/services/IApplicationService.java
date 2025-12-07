@@ -19,6 +19,6 @@ public interface IApplicationService {
     void updateApplicationStatus(Integer applicationId, String status);
     List<RecentApplicationDTO> getRecentApplications();
     ChartDataDTO getApplicationTrends(String type, Integer month);
-    
+    RegionChartDataDTO getActiveRegions(String type, Integer month);
     CompanyJobStatsDTO getCompanyJobStats(String type, Integer month);
 }
