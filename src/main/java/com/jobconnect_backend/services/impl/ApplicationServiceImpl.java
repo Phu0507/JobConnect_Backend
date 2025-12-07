@@ -254,23 +254,42 @@ public class ApplicationServiceImpl implements IApplicationService {
         int currentYear = now.getYear();
 
         List<Object[]> results;
+
         if ("range".equals(type)) {
             LocalDateTime start = LocalDateTime.of(currentYear, 1, 1, 0, 0);
-            LocalDateTime end = LocalDateTime.of(currentYear, now.getMonthValue() + 1, 1, 0, 0);
+
+            // end = đầu tháng kế tiếp của tháng hiện tại
+            LocalDateTime end = now
+                    .withDayOfMonth(1)
+                    .withHour(0).withMinute(0).withSecond(0).withNano(0)
+                    .plusMonths(1);
+
             results = applicationRepository.countByLocationAndCreatedAtBetween(start, end);
+
         } else if ("month".equals(type) && month != null) {
+            // (nên validate thêm month 1–12 cho chắc)
+            if (month < 1 || month > 12) {
+                throw new BadRequestException("Month must be between 1 and 12");
+            }
+
             LocalDateTime start = LocalDateTime.of(currentYear, month, 1, 0, 0);
             LocalDateTime end = start.plusMonths(1);
+
             results = applicationRepository.countByLocationAndCreatedAtBetween(start, end);
+
         } else {
             throw new BadRequestException("Invalid type or month");
         }
 
-        List<String> labels = results.stream().map(row -> (String) row[0]).collect(Collectors.toList());
-        List<Long> counts = results.stream().map(row -> ((Number) row[1]).longValue()).collect(Collectors.toList());
+        List<String> labels = results.stream()
+                .map(row -> (String) row[0])
+                .collect(Collectors.toList());
+
+        List<Long> counts = results.stream()
+                .map(row -> ((Number) row[1]).longValue())
+                .collect(Collectors.toList());
         dto.setLabels(labels);
         dto.setCounts(counts);
-
         return dto;
     }
 
